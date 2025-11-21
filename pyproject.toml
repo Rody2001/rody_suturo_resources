@@ -1,0 +1,9 @@
+[project]
+name = "suturo_resources"
+requires-python = ">=3.10"
+
+
+[tool.setuptools.packages.find]
+where = ["src"]  # list of folders that contain the packages (["."] by default)
+include = ["suturo_resources*"]  # list of package patterns to include (["*"] by default)
+
