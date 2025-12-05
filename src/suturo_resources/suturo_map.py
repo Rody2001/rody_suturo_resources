@@ -398,46 +398,6 @@ def build_environment_furniture(world: World):
                                          parent_T_connection_expression=TransformationMatrix.from_xyz_rpy(x=2.59975, y=5.705, z=0.365))
     all_elements_connections.append(root_C_diningTable)
 
-    # define floor polygon (z = 0 for all points)
-    kitchen_floor = [
-        Point3(-0.29, -2.51, 0.0),
-        Point3(4.924, -2.51, 0.0),
-        Point3(4.924, 0.477, 0.0),
-        Point3(-0.29, 0.477, 0.0),
-    ]
-
-    living_room_floor = [
-        Point3(-0.29, 0.477, 0.0),
-        Point3(4.924, 0.477, 0.0),
-        Point3(4.949, 4.8665, 0.0),
-        Point3(-0.29, 4.8665, 0.0),
-    ]
-
-    # TODo : magerment bedroom and office floor polygons
-    bed_room_floor = [
-        Point3(-0.29, 4.8665, 0.0),
-        Point3(4.949, 4.8665, 0.0),
-        Point3(4.949, 6.32, 0.0),
-        Point3(-0.29, 6.32, 0.0),
-    ]
-
-    office_floor = [
-        Point3(2.20975, 5.00, 0.0),
-        Point3(4.949, 5.00, 0.0),
-        Point3(4.949, 6.32, 0.0),
-        Point3(2.20975, 6.32, 0.0),
-    ]
-
-    # create factory and world
-    kitchen_world = RoomFactory(name=PrefixedName("kitchen_room"), floor_polytope=kitchen_floor).create()
-
-    root_C_room = FixedConnection(parent=root, child=kitchen_world.root,
-                                        parent_T_connection_expression=TransformationMatrix.from_xyz_rpy(x=1.859, y=-2.181, z=0.4225, yaw=np.pi / 2))
-
-    with world.modify_world():
-        world.merge_world(kitchen_world, root_C_room)
-
-
     with world.modify_world():
         for body in all_elements_bodies:
             world.add_body(body)
