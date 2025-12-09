@@ -1,14 +1,16 @@
 from semantic_digital_twin.world import World
-from semantic_digital_twin.world_description.geometry import Box, Scale, Sphere, Cylinder, FileMesh, Color
+from semantic_digital_twin.world_description.geometry import Cylinder
 from semantic_digital_twin.adapters.viz_marker import VizMarkerPublisher
 import threading
 import rclpy
 from semantic_digital_twin.datastructures.prefixed_name import PrefixedName
-from semantic_digital_twin.spatial_types.spatial_types import TransformationMatrix
+from semantic_digital_twin.spatial_types.spatial_types import TransformationMatrix, Point3
 from semantic_digital_twin.world_description.world_entity import Body
-from semantic_digital_twin.world_description.connections import Connection6DoF, FixedConnection
+from semantic_digital_twin.world_description.connections import FixedConnection
 from semantic_digital_twin.world_description.geometry import Box, Scale, Color
 from semantic_digital_twin.world_description.shape_collection import ShapeCollection
+
+from semantic_digital_twin.semantic_annotations.factories import (RoomFactory)
 
 
 white = Color(1, 1, 1)
@@ -165,6 +167,8 @@ def build_environment_furniture(world: World):
                                     parent_T_connection_expression=TransformationMatrix.from_xyz_rpy(x=0.537, y=-2.181, z=0.745))
     all_elements_connections.append(root_C_fridge)
 
+
+
     counterTop = Box(scale=Scale(2.044, 0.658, 0.545), color=wood)
     shape_geometry = ShapeCollection([counterTop])
     counterTop_body = Body(name=PrefixedName("counterTop_body"), collision=shape_geometry, visual=shape_geometry)
@@ -219,6 +223,7 @@ def build_environment_furniture(world: World):
                                      parent_T_connection_expression=TransformationMatrix.from_xyz_rpy(x=4.65, y=4.72, z=1.01))
     all_elements_connections.append(root_C_cabinet)
 
+
     desk = Box(scale=Scale(0.60, 1.20, 0.75), color=white)
     shape_geometry = ShapeCollection([desk])
     desk_body = Body(name=PrefixedName("desk_body"), collision=shape_geometry, visual=shape_geometry)
@@ -246,6 +251,68 @@ def build_environment_furniture(world: World):
     root_C_diningTable = FixedConnection(parent=root,child=diningTable_body,
                                          parent_T_connection_expression=TransformationMatrix.from_xyz_rpy(x=2.59975, y=5.705, z=0.365))
     all_elements_connections.append(root_C_diningTable)
+
+    kitchen_floor = [
+        Point3(0,0,0),
+        Point3(0,3.334,0),
+        Point3(5.214,3.334,0),
+        Point3(5.214,0,0),
+    ]
+
+    living_room_floor = [
+        Point3(0, 0, 0),
+        Point3(0, 2.971, 0),
+        Point3(5.214, 2.971, 0),
+        Point3(5.214, 0, 0),
+    ]
+
+    bed_room_floor = [
+        Point3(0, 0, 0),
+        Point3(0, 2.67, 0.0),
+        Point3(2.50, 2.67, 0.0),
+        Point3(2.50, 0, 0.0),
+    ]
+
+    office_floor = [
+        Point3(0, 0, 0),
+        Point3(0, 2.67, 0),
+        Point3(2.71, 2.67, 0),
+        Point3(2.71, 0, 0),
+    ]
+
+
+    kitchen_world = RoomFactory(name=PrefixedName("kitchen_room"), floor_polytope=kitchen_floor).create()
+
+    root_C_kitchen = FixedConnection(parent=root, child=kitchen_world.root,
+                                  parent_T_connection_expression=TransformationMatrix.from_xyz_rpy(x=2.317, y=-0.843))
+    with world.modify_world():
+        world.merge_world(kitchen_world, root_C_kitchen)
+
+
+    living_room_world = RoomFactory(name=PrefixedName("living_room"), floor_polytope=living_room_floor).create()
+
+    root_C_living = FixedConnection(parent=root, child=living_room_world.root,
+                                  parent_T_connection_expression=TransformationMatrix.from_xyz_rpy(x=2.317, y=2.3095))
+    with world.modify_world():
+        world.merge_world(living_room_world, root_C_living)
+
+
+    bed_room_world = RoomFactory(name=PrefixedName("bed_room"), floor_polytope=bed_room_floor).create()
+
+    root_C_bed = FixedConnection(parent=root, child=bed_room_world.root,
+                                    parent_T_connection_expression=TransformationMatrix.from_xyz_rpy(x=0.96, y=4.96))
+    with world.modify_world():
+        world.merge_world(bed_room_world, root_C_bed)
+
+
+    office_world = RoomFactory(name=PrefixedName("office"), floor_polytope=office_floor).create()
+
+    root_C_office = FixedConnection(parent=root, child=office_world.root,
+                                 parent_T_connection_expression=TransformationMatrix.from_xyz_rpy(x=3.56, y=4.96))
+    with world.modify_world():
+        world.merge_world(office_world, root_C_office)
+
+
 
     with world.modify_world():
         for body in all_elements_bodies:
