@@ -3,7 +3,7 @@ from krrood.entity_query_language.quantify_entity import an
 from semantic_digital_twin.world_description.world_entity import Region
 
 
-def query_kitchenarea(world):
+def query_kitchen_area(world):
     """
     Queries the kitchen area from the environment.
     Returns the center of mass and global pose of the kitchen region.
@@ -13,7 +13,7 @@ def query_kitchenarea(world):
     kitchen_room_area = list(query.evaluate())[0]
     return [float(kitchen_room_area.global_pose.x.to_np()[0]), float(kitchen_room_area.global_pose.y.to_np()[0]), float(kitchen_room_area.global_pose.z.to_np()[0])]
 
-def query_living_roomarea(world):
+def query_living_room_area(world):
     """
     Queries the living room area.
     Returns the center of mass and global pose of the living room region.
