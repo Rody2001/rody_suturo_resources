@@ -1,5 +1,5 @@
 from semantic_digital_twin.world import World
-from semantic_digital_twin.world_description.geometry import Cylinder
+from semantic_digital_twin.world_description.geometry import Cylinder, Sphere
 from semantic_digital_twin.adapters.viz_marker import VizMarkerPublisher
 import threading
 import rclpy

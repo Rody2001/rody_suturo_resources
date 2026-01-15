@@ -45,7 +45,7 @@ def assign_distance_to_object(obj, pov):
 
     return float(dist_sq)
 
-def test_eql_is_supported_by():
+def eql_is_supported_by(support_body: Body):
 
     @symbolic_function
     def is_supported_by(
@@ -90,12 +90,11 @@ def test_eql_is_supported_by():
         size = sum([si.upper - si.lower for si in z_intersection.simple_sets])
         return size < max_intersection_height
 
-    world = load_environment()
-    table = world.get_body_by_name("table_body")
 
-    body = variable(Body, domain=world.bodies)
+
+    body = variable(Body, domain=support_body._world.bodies)
     results = list(
-        an(entity(body).where(is_supported_by(supported_body=body, supporting_body=table)))
+        an(entity(body).where(is_supported_by(supported_body=body, supporting_body=support_body)))
         .evaluate()
     )
     body2 = variable(Body, domain=results)
@@ -105,4 +104,4 @@ def test_eql_is_supported_by():
 
     print([b for b in list(results2_query.evaluate())])
 
-#print(test_eql_is_supported_by())
+print(eql_is_supported_by(load_environment().get_body_by_name("table_body")))
