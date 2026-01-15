@@ -1,4 +1,3 @@
-from suturo_resources.queries import get_next_object
 from suturo_resources.suturo_map import load_environment
 
 from semantic_digital_twin.datastructures.prefixed_name import PrefixedName
@@ -42,5 +41,7 @@ def test_load_world():
                                                                                                                 y=0.426,
                                                                                                                 z=0.8225))
     all_elements_connections.append(root_C_banana)
+
+
 
     return world
