@@ -1,17 +1,3 @@
-from time import sleep
-
-from krrood.entity_query_language.entity import variable, entity, contains
-from krrood.entity_query_language.entity_result_processors import an
-from krrood.entity_query_language.predicate import symbolic_function
-from random_events.interval import Interval
-from semantic_digital_twin.datastructures.variables import SpatialVariables
-from semantic_digital_twin.reasoning.predicates import Below
-from semantic_digital_twin.spatial_types import HomogeneousTransformationMatrix
-from semantic_digital_twin.world import World
-from semantic_digital_twin.datastructures.prefixed_name import PrefixedName
-from semantic_digital_twin.world_description.world_entity import Body
-
-from conftest import test_load_world
 from suturo_resources.queries import query_region_area
 from suturo_resources.suturo_map import load_environment, Publisher
 

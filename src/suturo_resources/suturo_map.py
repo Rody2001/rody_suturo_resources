@@ -164,7 +164,7 @@ def build_environment_furniture(world: World):
     trash_can_body = Body(name=PrefixedName("trash_can_body"), collision=shape_geometry, visual=shape_geometry)
 
     root_C_trash_can = FixedConnection(parent=root, child=trash_can_body,
-                                       parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(x=1, y=1, z=0.20))
+                                       parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(x=4.5, y=-0.25, z=0.20)) #x=4.5, y=-0.25
     all_elements_connections.append(root_C_trash_can)
 
     refrigerator = Box(scale=Scale(0.60, 0.658, 1.49), color=white)
@@ -270,7 +270,7 @@ def build_environment_furniture(world: World):
     shape_geometry = ShapeCollection([banana])
     banana_body = Body(name=PrefixedName("banana_body"), collision=shape_geometry, visual=shape_geometry)
     root_C_banana = FixedConnection(parent=root, child=banana_body,
-                                   parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(x=3.245, y=0.426, z=0.8225))
+                                   parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(x=3.245, y=0.426, z=0.85))
     all_elements_connections.append(root_C_banana)
 
     cup = Cylinder(width=0.07, height=0.10, color=red)
