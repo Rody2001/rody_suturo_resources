@@ -98,6 +98,8 @@ def test_query_most_similar_obj():
     # choosing the empty table
     assert query_most_similar_obj(lettuce, [table1, table3], world) == table3
     assert query_most_similar_obj(table1, [table1, table2, table3], world) == table3
+    # trying with a new threshold
+    assert query_most_similar_obj(orange, [table2, table3], world, 2) == table2
     # returning None if there is no empty table
     assert query_most_similar_obj(apple, [table2], world) == None
     # returning an error if there are no tables
