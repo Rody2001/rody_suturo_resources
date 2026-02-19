@@ -1,11 +1,10 @@
 import pytest
 from semantic_digital_twin.datastructures.prefixed_name import PrefixedName
-from semantic_digital_twin.exceptions import IncorrectParameterScaleError
 from semantic_digital_twin.world import World
 
 from conftest import test_load_world
 from suturo_resources.queries import (
-    query_most_similar_obj,
+    query_surface_of_most_similar_obj,
     query_semantic_annotations_on_surfaces,
     query_get_next_object_euclidean_x_y,
 )
@@ -94,18 +93,16 @@ def test_query_most_similar_obj():
     lettuce = world.get_semantic_annotation_by_name("lettuce_annotation")
 
     # choosing the correct table
-    assert query_most_similar_obj(banana, [table1, table2, table3], world) == table1
-    assert query_most_similar_obj(carrot, [table1, table2, table3], world) == table2
+    assert query_surface_of_most_similar_obj(banana, [table1, table2, table3]) == table1
+    assert query_surface_of_most_similar_obj(carrot, [table1, table2, table3]) == table2
     # choosing the empty table
-    assert query_most_similar_obj(lettuce, [table1, table3], world) == table3
-    assert query_most_similar_obj(table1, [table1, table2, table3], world) == table3
+    assert query_surface_of_most_similar_obj(lettuce, [table1, table3]) == table3
+    assert query_surface_of_most_similar_obj(table1, [table1, table2, table3]) == table3
     # trying with a new threshold
-    assert query_most_similar_obj(orange, [table2, table3], world, 2) == table2
-    # returning None if there is no empty table
-    assert query_most_similar_obj(apple, [table2], world) == None
+    assert query_surface_of_most_similar_obj(orange, [table2, table3], 2) == table2
+    # returning None if there is no empty table or no tables
+    assert query_surface_of_most_similar_obj(apple, [table2]) == None
+    assert query_surface_of_most_similar_obj(orange, []) == None
     # trying with 2 empty tables
-    assert query_most_similar_obj(apple, [table2, table3, table4], world) == table3
-    assert query_most_similar_obj(apple, [table2, table4, table3], world) == table4
-    # returning an error if there are no tables
-    with pytest.raises(IncorrectParameterScaleError):
-        query_most_similar_obj(orange, [], world)
+    assert query_surface_of_most_similar_obj(apple, [table2, table3, table4]) == table3
+    assert query_surface_of_most_similar_obj(apple, [table2, table4, table3]) == table4

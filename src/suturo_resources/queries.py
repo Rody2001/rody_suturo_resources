@@ -1,17 +1,17 @@
 import math
-from typing import List, Union
+from typing import List, Union, Optional
 from krrood.entity_query_language.entity import (
     entity,
     variable_from,
 )
 from krrood.entity_query_language.symbolic import QueryObjectDescriptor, Entity
 from krrood.utils import inheritance_path_length
-from semantic_digital_twin.exceptions import IncorrectParameterScaleError
 from semantic_digital_twin.reasoning.predicates import (
     is_supported_by,
     compute_euclidean_distance_2d,
     is_supporting,
 )
+from semantic_digital_twin.semantic_annotations.mixins import HasSupportingSurface
 from semantic_digital_twin.world import World
 
 from semantic_digital_twin.world_description.world_entity import (
@@ -70,29 +70,26 @@ def query_get_next_object_euclidean_x_y(
     )
 
 
-def query_most_similar_obj(
-    main_annotation: SemanticAnnotation,
-    supporting_surfaces: List[SemanticAnnotation],
-    world: World,
+def query_surface_of_most_similar_obj(
+    object_of_interest: SemanticAnnotation,
+    supporting_surfaces: List[HasSupportingSurface],
     threshold: int = 1,
-) -> SemanticAnnotation:
+) -> Optional[HasSupportingSurface]:
     """
     Finds the most similar object to a given semantic annotation among a list of tables
     based on the inheritance path length. If the similarity does not meet the provided
     threshold, the method attempts to return the table that is not supporting any object.
     The similarity metric leverages the class hierarchy to compute distances.
 
-    :param main_annotation: The semantic annotation to compare.
+    :param object_of_interest: The semantic annotation to compare.
     :param supporting_surfaces: A list of supporting surfaces semantic annotations to search on top of them for similar objects to the main_annotation.
-    :param world: The contextual world data used for determining support relationships
-                  and querying objects.
     :param threshold: The maximum acceptable inheritance path length to classify objects
                       as similar. Defaults to 1.
     :return: The semantic annotation of the most appropriate table based on similarity
              metrics or the non-supporting table when no viable candidate is found.
     """
     if not supporting_surfaces:
-        raise IncorrectParameterScaleError(supporting_surfaces)
+        return None
 
     # Find the surface that is not supporting anything
     non_supporting_table = None
@@ -103,7 +100,7 @@ def query_most_similar_obj(
 
     # Query annotations on the surfaces of the tables
     objects = query_semantic_annotations_on_surfaces(
-        supporting_surfaces, world
+        supporting_surfaces, object_of_interest._world
     ).tolist()
 
     best_distance = math.inf
@@ -112,7 +109,7 @@ def query_most_similar_obj(
     # Iterate over each object to find the most similar based on inheritance path length
     for obj in objects:
         for cls in type(obj).__mro__:
-            dist = inheritance_path_length(type(main_annotation), cls)
+            dist = inheritance_path_length(type(object_of_interest), cls)
             if dist is None:
                 continue
             if dist < best_distance:
