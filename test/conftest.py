@@ -27,10 +27,6 @@ from semantic_digital_twin.world_description.shape_collection import ShapeCollec
 
 def test_load_world():
     world = World()
-    red = Color(255, 0, 0)
-    orangeC = Color(1, 0.647, 0)
-    yellow = Color(255, 255, 0)
-    green = Color(0, 1, 0)
     all_elements_connections = []
     all_elements_annotations = []
     root = Body(name=PrefixedName("root"))
@@ -119,7 +115,7 @@ def test_load_world():
     )
     all_elements_connections.append(root_C_empty_table)
 
-    apple = Sphere(radius=0.10, color=red)
+    apple = Sphere(radius=0.10, color=Color.RED())
     shape_geometry = ShapeCollection([apple])
     apple_body = Body(
         name=PrefixedName("apple_body"), collision=shape_geometry, visual=shape_geometry
@@ -135,7 +131,7 @@ def test_load_world():
     )
     all_elements_connections.append(root_C_apple)
 
-    orange = Sphere(radius=0.10, color=orangeC)
+    orange = Sphere(radius=0.10, color=Color.ORANGE())
     shape_geometry = ShapeCollection([orange])
     orange_body = Body(
         name=PrefixedName("orange_body"),
@@ -153,7 +149,7 @@ def test_load_world():
     )
     all_elements_connections.append(root_C_orange)
 
-    carrot = Cylinder(width=0.05, height=0.20, color=orangeC)
+    carrot = Cylinder(width=0.05, height=0.20, color=Color.ORANGE())
     shape_geometry = ShapeCollection([carrot])
     carrot_body = Body(
         name=PrefixedName("carrot_body"),
@@ -171,7 +167,7 @@ def test_load_world():
     )
     all_elements_connections.append(root_C_carrot)
 
-    lettuce = Box(scale=Scale(0.15, 0.15, 0.10), color=green)
+    lettuce = Box(scale=Scale(0.15, 0.15, 0.10), color=Color.GREEN())
     shape_geometry = ShapeCollection([lettuce])
     lettuce_body = Body(
         name=PrefixedName("lettuce_body"),
@@ -191,7 +187,7 @@ def test_load_world():
     )
     all_elements_connections.append(root_C_lettuce)
 
-    banana = Box(scale=Scale(0.20, 0.05, 0.05), color=yellow)
+    banana = Box(scale=Scale(0.20, 0.05, 0.05), color=Color.YELLOW())
     shape_geometry = ShapeCollection([banana])
     banana_body = Body(
         name=PrefixedName("banana_body"),

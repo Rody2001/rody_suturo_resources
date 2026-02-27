@@ -1,4 +1,3 @@
-from semantic_digital_twin.adapters.ros.tf_publisher import TFPublisher
 from semantic_digital_twin.adapters.ros.visualization.viz_marker import (
     VizMarkerPublisher,
 )
@@ -23,19 +22,6 @@ from semantic_digital_twin.world_description.geometry import Box, Scale, Color
 from semantic_digital_twin.world_description.geometry import Cylinder
 from semantic_digital_twin.world_description.shape_collection import ShapeCollection
 from semantic_digital_twin.world_description.world_entity import Body
-
-# from .krood_entity_query_language.enums import Color as ColorEnum
-
-white = Color(1, 1, 1)
-red = Color(255, 0, 0)
-blue = Color(0, 0, 1)
-orangeC = Color(1, 0.647, 0)
-yellow = Color(1, 1, 0)
-green = Color(0, 1, 0)
-black = Color(0, 0, 0)
-gray = Color(0.74, 0.74, 0.74)
-wood = Color(1, 0.827, 0.6078)
-
 
 def load_environment():
     """
@@ -72,7 +58,7 @@ def build_environment_walls(world: World):
     all_wall_connections = []
     root = world.get_body_by_name("root")
 
-    south_wall1 = Box(scale=Scale(0.05, 1.00, 3.00), color=gray)
+    south_wall1 = Box(scale=Scale(0.05, 1.00, 3.00))
     shape_geometry = ShapeCollection([south_wall1])
     south_wall1_body = Body(
         name=PrefixedName("south_wall1_body"),
@@ -89,7 +75,7 @@ def build_environment_walls(world: World):
     )
     all_wall_connections.append(root_C_south_wall1)
 
-    south_wall2 = Box(scale=Scale(0.29, 0.05, 3.00), color=gray)
+    south_wall2 = Box(scale=Scale(0.29, 0.05, 3.00))
     shape_geometry = ShapeCollection([south_wall2])
     south_wall2_body = Body(
         name=PrefixedName("south_wall2_body"),
@@ -106,7 +92,7 @@ def build_environment_walls(world: World):
     )
     all_wall_connections.append(root_C_south_wall2)
 
-    south_wall3 = Box(scale=Scale(0.05, 1.085, 1.00), color=gray)
+    south_wall3 = Box(scale=Scale(0.05, 1.085, 1.00))
     shape_geometry = ShapeCollection([south_wall3])
     south_wall3_body = Body(
         name=PrefixedName("south_wall3_body"),
@@ -123,7 +109,7 @@ def build_environment_walls(world: World):
     )
     all_wall_connections.append(root_C_south_wall3)
 
-    south_wall4 = Box(scale=Scale(0.29, 0.05, 1.00), color=gray)
+    south_wall4 = Box(scale=Scale(0.29, 0.05, 1.00))
     shape_geometry = ShapeCollection([south_wall4])
     south_wall4_body = Body(
         name=PrefixedName("south_wall4_body"),
@@ -140,7 +126,7 @@ def build_environment_walls(world: World):
     )
     all_wall_connections.append(root_C_south_wall4)
 
-    south_wall5 = Box(scale=Scale(0.29, 0.05, 1.00), color=gray)
+    south_wall5 = Box(scale=Scale(0.29, 0.05, 1.00))
     shape_geometry = ShapeCollection([south_wall5])
     south_wall5_body = Body(
         name=PrefixedName("south_wall5_body"),
@@ -157,7 +143,7 @@ def build_environment_walls(world: World):
     )
     all_wall_connections.append(root_C_south_wall5)
 
-    south_wall6 = Box(scale=Scale(0.05, 2.75, 1.00), color=gray)
+    south_wall6 = Box(scale=Scale(0.05, 2.75, 1.00))
     shape_geometry = ShapeCollection([south_wall6])
     south_wall6_body = Body(
         name=PrefixedName("south_wall6_body"),
@@ -174,7 +160,7 @@ def build_environment_walls(world: World):
     )
     all_wall_connections.append(root_C_south_wall6)
 
-    south_wall7 = Box(scale=Scale(0.05, 2.27, 1.00), color=gray)
+    south_wall7 = Box(scale=Scale(0.05, 2.27, 1.00))
     shape_geometry = ShapeCollection([south_wall7])
     south_wall7_body = Body(
         name=PrefixedName("south_wall7_body"),
@@ -191,7 +177,7 @@ def build_environment_walls(world: World):
     )
     all_wall_connections.append(root_C_south_wall7)
 
-    east_wall = Box(scale=Scale(4.924, 0.05, 3.00), color=gray)
+    east_wall = Box(scale=Scale(4.924, 0.05, 3.00))
     shape_geometry = ShapeCollection([east_wall])
     east_wall_body = Body(
         name=PrefixedName("east_wall_body"),
@@ -208,7 +194,7 @@ def build_environment_walls(world: World):
     )
     all_wall_connections.append(root_C_east_wall)
 
-    middle_wall = Box(scale=Scale(0.05, 2.67, 1.00), color=gray)
+    middle_wall = Box(scale=Scale(0.05, 2.67, 1.00))
     shape_geometry = ShapeCollection([middle_wall])
     middle_wall_body = Body(
         name=PrefixedName("middle_wall_body"),
@@ -225,7 +211,7 @@ def build_environment_walls(world: World):
     )
     all_wall_connections.append(root_C_middle_wall)
 
-    west_wall = Box(scale=Scale(4.449, 0.05, 3.00), color=gray)
+    west_wall = Box(scale=Scale(4.449, 0.05, 3.00))
     shape_geometry = ShapeCollection([west_wall])
     west_wall_body = Body(
         name=PrefixedName("west_wall_body"),
@@ -242,7 +228,7 @@ def build_environment_walls(world: World):
     )
     all_wall_connections.append(root_C_west_wall)
 
-    north_wall = Box(scale=Scale(0.05, 8.04, 3.00), color=gray)
+    north_wall = Box(scale=Scale(0.05, 8.04, 3.00))
     shape_geometry = ShapeCollection([north_wall])
     north_wall_body = Body(
         name=PrefixedName("north_wall_body"),
@@ -259,7 +245,7 @@ def build_environment_walls(world: World):
     )
     all_wall_connections.append(root_C_north_wall)
 
-    north_west_wall = Cylinder(width=1.53, height=3.00, color=gray)
+    north_west_wall = Cylinder(width=1.53, height=3.00)
     shape_geometry = ShapeCollection([north_west_wall])
     north_west_wall_body = Body(
         name=PrefixedName("north_west_wall_body"),
@@ -292,7 +278,7 @@ def build_environment_furniture(world: World):
     all_elements_annotations = []
     root = world.get_body_by_name("root")
 
-    trash_can = Cylinder(width=0.30, height=0.40, color=black)
+    trash_can = Cylinder(width=0.30, height=0.40, color=Color.BLACK())
     shape_geometry = ShapeCollection([trash_can])
     trash_can_body = Body(
         name=PrefixedName("trash_can_body"),
@@ -313,7 +299,7 @@ def build_environment_furniture(world: World):
     )  # x=0.5, y=5.5, z=0.20
     all_elements_connections.append(root_C_trash_can)
 
-    refrigerator = Box(scale=Scale(0.60, 0.658, 1.49), color=white)
+    refrigerator = Box(scale=Scale(0.60, 0.658, 1.49))
     shape_geometry = ShapeCollection([refrigerator])
     refrigerator_body = Body(
         name=PrefixedName("refrigerator_body"),
@@ -330,7 +316,7 @@ def build_environment_furniture(world: World):
     )
     all_elements_connections.append(root_C_fridge)
 
-    counterTop = Box(scale=Scale(2.044, 0.658, 0.545), color=wood)
+    counterTop = Box(scale=Scale(2.044, 0.658, 0.545), color=Color.BEIGE())
     shape_geometry = ShapeCollection([counterTop])
     counterTop_body = Body(
         name=PrefixedName("counterTop_body"),
@@ -347,7 +333,7 @@ def build_environment_furniture(world: World):
     )
     all_elements_connections.append(root_C_counterTop)
 
-    ovenArea = Box(scale=Scale(1.20, 0.658, 1.49), color=white)
+    ovenArea = Box(scale=Scale(1.20, 0.658, 1.49))
     shape_geometry = ShapeCollection([ovenArea])
     ovenArea_body = Body(
         name=PrefixedName("ovenArea_body"),
@@ -364,7 +350,7 @@ def build_environment_furniture(world: World):
     )
     all_elements_connections.append(root_C_ovenArea)
 
-    table = Box(scale=Scale(2.45, 0.796, 0.845), color=white)
+    table = Box(scale=Scale(2.45, 0.796, 0.845))
     shape_geometry = ShapeCollection([table])
     table_body = Body(
         name=PrefixedName("table_body"), collision=shape_geometry, visual=shape_geometry
@@ -381,7 +367,7 @@ def build_environment_furniture(world: World):
     )
     all_elements_connections.append(root_C_table)
 
-    sofa = Box(scale=Scale(1.68, 0.94, 0.68), color=wood)
+    sofa = Box(scale=Scale(1.68, 0.94, 0.68), color=Color.BEIGE())
     shape_geometry = ShapeCollection([sofa])
     sofa_body = Body(
         name=PrefixedName("sofa_body"), collision=shape_geometry, visual=shape_geometry
@@ -398,7 +384,7 @@ def build_environment_furniture(world: World):
     )
     all_elements_connections.append(root_C_sofa)
 
-    lowerTable = Box(scale=Scale(0.37, 0.91, 0.44), color=white)
+    lowerTable = Box(scale=Scale(0.37, 0.91, 0.44))
     shape_geometry = ShapeCollection([lowerTable])
     lowerTable_body = Body(
         name=PrefixedName("lowerTable_body"),
@@ -419,7 +405,7 @@ def build_environment_furniture(world: World):
     )
     all_elements_connections.append(root_C_lowerTable)
 
-    cabinet = Box(scale=Scale(0.43, 0.80, 2.02), color=white)
+    cabinet = Box(scale=Scale(0.43, 0.80, 2.02))
     shape_geometry = ShapeCollection([cabinet])
     cabinet_body = Body(
         name=PrefixedName("cabinet_body"),
@@ -436,7 +422,7 @@ def build_environment_furniture(world: World):
     )
     all_elements_connections.append(root_C_cabinet)
 
-    desk = Box(scale=Scale(0.60, 1.20, 0.75), color=white)
+    desk = Box(scale=Scale(0.60, 1.20, 0.75))
     shape_geometry = ShapeCollection([desk])
     desk_body = Body(
         name=PrefixedName("desk_body"), collision=shape_geometry, visual=shape_geometry
@@ -451,7 +437,7 @@ def build_environment_furniture(world: World):
     )
     all_elements_connections.append(root_C_desk)
 
-    cookingTable = Box(scale=Scale(1.75, 0.64, 0.71), color=wood)
+    cookingTable = Box(scale=Scale(1.75, 0.64, 0.71), color=Color.BEIGE())
     shape_geometry = ShapeCollection([cookingTable])
     cookingTable_body = Body(
         name=PrefixedName("cookingTable_body"),
@@ -472,7 +458,7 @@ def build_environment_furniture(world: World):
     )
     all_elements_connections.append(root_C_cookingTable)
 
-    diningTable = Box(scale=Scale(0.73, 1.18, 0.73), color=wood)
+    diningTable = Box(scale=Scale(0.73, 1.18, 0.73), color=Color.BEIGE())
     shape_geometry = ShapeCollection([diningTable])
     diningTable_body = Body(
         name=PrefixedName("diningTable_body"),
@@ -494,32 +480,8 @@ def build_environment_furniture(world: World):
     all_elements_connections.append(root_C_diningTable)
 
     with world.modify_world():
-        dishwasher = Dishwasher.create_with_new_body_in_world(
-            name=PrefixedName("dishwasher"),
-            world=world,
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
-                x=1, y=1, z=1
-            ),
-            scale=Scale(x=1, y=1, z=2),
-        )
-
-        cup = Cup.create_with_new_body_in_world(
-            name=PrefixedName("cup"),
-            world=world,
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
-                x=1, y=1, z=4
-            ),
-            scale=Scale(x=0.5, y=0.5, z=0.5),
-        )
-
-    with world.modify_world():
         for conn in all_elements_connections:
             world.add_connection(conn)
-
-    with world.modify_world():
-        cup = world.get_body_by_name("cup")
-        for i in cup.visual.shapes:
-            i.color = red
     return world
 
 

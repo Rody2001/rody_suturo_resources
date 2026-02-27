@@ -1,13 +1,14 @@
 from semantic_digital_twin.datastructures.prefixed_name import PrefixedName
 from semantic_digital_twin.world import World
+from semantic_digital_twin.world_description.geometry import Color
 
 from conftest import test_load_world
 from suturo_resources.queries import (
     query_surface_of_most_similar_obj,
     query_semantic_annotations_on_surfaces,
-    query_get_next_object_euclidean_x_y,
+    query_get_next_object_euclidean_x_y, query_annotations_by_color,
 )
-from suturo_resources.suturo_map import load_environment, Publisher
+from suturo_resources.suturo_map import load_environment
 
 
 def test_load_environment_returns_world():
@@ -15,8 +16,6 @@ def test_load_environment_returns_world():
     Tests that loading the environment returns a World object with the correct root name.
     """
     world = load_environment()
-    publisher = Publisher("semantic_digital_twin")
-    publisher.publish(world)
     assert isinstance(world, World)
     assert world.root.name == PrefixedName("root_slam")
 
@@ -77,9 +76,6 @@ def test_query_surface_of_most_similar_obj():
     other constraints. The function is evaluated under multiple scenarios to verify
     its logic in choosing the correct table, handling empty tables, and cases with
     no valid candidates.
-
-    :raises IncorrectParameterScaleError: If there are no tables provided in the
-        candidate list for comparison.
     """
     world = test_load_world()
     table1 = world.get_semantic_annotation_by_name("fruit_table_annotation")
@@ -107,3 +103,20 @@ def test_query_surface_of_most_similar_obj():
     # trying with 2 empty tables
     assert query_surface_of_most_similar_obj(apple, [table2, table3, table4]) == table3
     assert query_surface_of_most_similar_obj(apple, [table2, table4, table3]) == table4
+
+def test_query_body_by_color():
+    """
+    Tests the query_annotations_by_color function by verifying the retrieval of semantic
+    annotations by their associated colors.
+
+    The function validates that calling query_bodies_by_color with different color
+    parameters returns the expected list of annotations corresponding to that color
+    within the test world.
+    """
+    world = test_load_world()
+    apple = world.get_semantic_annotation_by_name("apple_annotation")
+    orange = world.get_semantic_annotation_by_name("orange_annotation")
+    carrot = world.get_semantic_annotation_by_name("carrot_annotation")
+
+    assert query_annotations_by_color(Color.RED(), world) == [apple]
+    assert query_annotations_by_color(Color.ORANGE(), world) == [orange, carrot]
