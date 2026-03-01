@@ -5,8 +5,7 @@ from semantic_digital_twin.semantic_annotations.semantic_annotations import (
     Table,
     Sofa,
     TrashCan,
-    Dishwasher,
-    Cup,
+    Fridge, Counter_Top,
 )
 from semantic_digital_twin.world import World
 import threading
@@ -296,7 +295,7 @@ def build_environment_furniture(world: World):
         parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
             x=0.416, y=5.5, z=0.20
         ),
-    )  # x=0.5, y=5.5, z=0.20
+    )
     all_elements_connections.append(root_C_trash_can)
 
     refrigerator = Box(scale=Scale(0.60, 0.658, 1.49))
@@ -306,6 +305,8 @@ def build_environment_furniture(world: World):
         collision=shape_geometry,
         visual=shape_geometry,
     )
+    refrigerator_annotation = Fridge(root=refrigerator_body, name=PrefixedName("refrigerator_annotation"))
+    all_elements_annotations.append(refrigerator_annotation)
 
     root_C_fridge = FixedConnection(
         parent=root,
@@ -323,6 +324,8 @@ def build_environment_furniture(world: World):
         collision=shape_geometry,
         visual=shape_geometry,
     )
+    counterTop_annotation = Counter_Top(root=counterTop_body, name=PrefixedName("counterTop_annotation"))
+    all_elements_annotations.append(counterTop_annotation)
 
     root_C_counterTop = FixedConnection(
         parent=root,
@@ -480,6 +483,8 @@ def build_environment_furniture(world: World):
     all_elements_connections.append(root_C_diningTable)
 
     with world.modify_world():
+        for annotation in all_elements_annotations:
+            world.add_semantic_annotation(annotation)
         for conn in all_elements_connections:
             world.add_connection(conn)
     return world

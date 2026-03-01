@@ -127,21 +127,26 @@ def query_surface_of_most_similar_obj(
             return supporting_surface
 
 
-def query_annotations_by_color(color: Color, world: World) -> List[Body]:
+def query_annotations_by_color(color: Color, world: World) -> List[SemanticAnnotation]:
     """
-    Queries and retrieves a list of bodies from a given world that match
+    Queries and retrieves a list of annotations from a given world that match
     the specified color based on their visual properties.
 
     :param color: The color to filter bodies by.
     :param world: The world containing the bodies to be queried.
 
-    :return: List[Body]: A list of bodies from the world whose primary shape's
+    :return: List[SemanticAnnotation]: A list of annotations from the world whose primary shape's
     visual color matches the specified color.
     """
-    all_annotations = world.semantic_annotations
-    filtered_annotations = []
+    all_bodies = world.bodies_with_enabled_collision
+    filtered_bodies = []
 
-    for annotation in all_annotations:
-        if annotation.bodies[0].visual.shapes[0].color == color:
-            filtered_annotations.append(annotation)
+    for body in all_bodies:
+        if body.visual is None:
+            continue
+        if body.visual.shapes[0].color == color:
+            filtered_bodies.append(body)
+    filtered_annotations = []
+    for body in filtered_bodies:
+        filtered_annotations.append(list(body._semantic_annotations)[0])
     return filtered_annotations

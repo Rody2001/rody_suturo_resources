@@ -113,10 +113,11 @@ def test_query_body_by_color():
     parameters returns the expected list of annotations corresponding to that color
     within the test world.
     """
-    world = test_load_world()
-    apple = world.get_semantic_annotation_by_name("apple_annotation")
-    orange = world.get_semantic_annotation_by_name("orange_annotation")
-    carrot = world.get_semantic_annotation_by_name("carrot_annotation")
+    world1 = test_load_world()
+    apple = world1.get_semantic_annotation_by_name("apple_annotation")
+    orange = world1.get_semantic_annotation_by_name("orange_annotation")
+    carrot = world1.get_semantic_annotation_by_name("carrot_annotation")
 
-    assert query_annotations_by_color(Color.RED(), world) == [apple]
-    assert query_annotations_by_color(Color.ORANGE(), world) == [orange, carrot]
+    assert query_annotations_by_color(Color.RED(), world1) == [apple]
+    assert query_annotations_by_color(Color.ORANGE(), world1) == [orange, carrot]
+    assert query_annotations_by_color(Color.BLUE(), world1) == []
