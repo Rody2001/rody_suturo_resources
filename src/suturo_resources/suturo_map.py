@@ -437,7 +437,7 @@ def build_environment_furniture(world: World):
 
 
     with world.modify_world():
-        cupboard_pose = Point3(3.8, 4.72, 1.01)
+        cupboard_pose = Point3(4.72, 4.72, 1.01)
         cupboard_scale = Scale(0.43, 0.80, 2.02)
 
         cupboard = Cupboard.create_with_new_body_in_world(
@@ -449,82 +449,141 @@ def build_environment_furniture(world: World):
             scale=cupboard_scale,
             wall_thickness=0.02,
         )
+        # Den Schrank an 'root' hängen, damit die Koordinaten relativ zum Raum sind
+        cupboard_connection = cupboard.root.parent_connection
+        world.remove_connection(cupboard_connection)
+        cupboard_connection.parent = root
+        world.add_connection(cupboard_connection)
 
-        # Add Shelves
-        # Shelf dimensions: slightly smaller than the cabinet interior
-        # Cabinet inner width ~ cupboard_scale.y - 0.04 = 0.76
-        # Cabinet inner depth ~ cupboard_scale.x - 0.02 = 0.41
+        # Regalböden manuell erstellen und direkt an den Schrank hängen
         shelf_scale = Scale(0.40, 0.76, 0.02)
 
-        # Shelf 1 at height offset -0.5 (relative to center)
-        shelf_1 = ShelfLayer.create_with_new_body_in_world(
-            name=PrefixedName("cupboard_shelf_1"),
-            world=world,
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
-                x=cupboard_pose.x, y=cupboard_pose.y, z=cupboard_pose.z - 0.5
-            ),
-            scale=shelf_scale
+        # Shelf 1
+        shelf_1_geom = ShapeCollection([Box(scale=shelf_scale, color=white)])
+        shelf_1_body = Body(
+            name=PrefixedName("cupboard_shelf_1_body"),
+            collision=shelf_1_geom,
+            visual=shelf_1_geom,
         )
+        shelf_1 = ShelfLayer(root=shelf_1_body, name=PrefixedName("cupboard_shelf_1"))
+
+        cupboard_C_shelf_1 = FixedConnection(
+            parent=cupboard.root,
+            child=shelf_1_body,
+            parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
+                x=0, y=0, z=-0.5
+            ),
+        )
+        world.add_connection(cupboard_C_shelf_1)
+        world.add_semantic_annotation(shelf_1)
         cupboard.add_shelf_layer(shelf_1)
 
-        # Shelf 2 at height offset +0.5
-        shelf_2 = ShelfLayer.create_with_new_body_in_world(
-            name=PrefixedName("cupboard_shelf_2"),
-            world=world,
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
-                x=cupboard_pose.x, y=cupboard_pose.y, z=cupboard_pose.z + 0.5
-            ),
-            scale=shelf_scale
+        # Shelf 2
+        shelf_2_geom = ShapeCollection([Box(scale=shelf_scale, color=white)])
+        shelf_2_body = Body(
+            name=PrefixedName("cupboard_shelf_2_body"),
+            collision=shelf_2_geom,
+            visual=shelf_2_geom,
         )
+        shelf_2 = ShelfLayer(root=shelf_2_body, name=PrefixedName("cupboard_shelf_2"))
+
+        cupboard_C_shelf_2 = FixedConnection(
+            parent=cupboard.root,
+            child=shelf_2_body,
+            parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
+                x=0, y=0, z=0.5
+            ),
+        )
+        world.add_connection(cupboard_C_shelf_2)
+        world.add_semantic_annotation(shelf_2)
         cupboard.add_shelf_layer(shelf_2)
 
-        # Create and add doors
-        # The cupboard opening is at the negative X face.
-        # We position the doors slightly in front of that face.
-        door_x = cupboard_pose.x - (cupboard_scale.x / 2) - 0.01  # Center X - Half Width - Half Door Thickness
+        # Türen manuell erstellen und direkt an den Schrank hängen
+        door_x_rel = -(cupboard_scale.x / 2) - 0.01
         door_scale = Scale(0.02, 0.40, 2.02)
 
-        door_left = Door.create_with_new_body_in_world(
-            name=PrefixedName("cupboard_door_left"),
-            world=world,
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
-                x=door_x + 0.40, y=cupboard_pose.y - 0.20, z=cupboard_pose.z
-            ),
-            scale=door_scale,
+        # Left Door
+        door_left_geom = ShapeCollection([Box(scale=door_scale, color=white)])
+        door_left_body = Body(
+            name=PrefixedName("cupboard_door_left_body"),
+            collision=door_left_geom,
+            visual=door_left_geom,
         )
+        door_left = Door(root=door_left_body, name=PrefixedName("cupboard_door_left"))
+
+        cupboard_C_door_left = FixedConnection(
+            parent=cupboard.root,
+            child=door_left_body,
+            parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
+                x=door_x_rel, y=-0.20, z=0
+            ),
+        )
+        world.add_connection(cupboard_C_door_left)
+        world.add_semantic_annotation(door_left)
         cupboard.add_door(door_left)
 
-        door_right = Door.create_with_new_body_in_world(
-            name=PrefixedName("cupboard_door_right"),
-            world=world,
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
-                x=door_x + 0.40, y=cupboard_pose.y + 0.20, z=cupboard_pose.z
-            ),
-            scale=door_scale,
+        # Right Door
+        door_right_geom = ShapeCollection([Box(scale=door_scale, color=white)])
+        door_right_body = Body(
+            name=PrefixedName("cupboard_door_right_body"),
+            collision=door_right_geom,
+            visual=door_right_geom,
         )
+        door_right = Door(root=door_right_body, name=PrefixedName("cupboard_door_right"))
+
+        cupboard_C_door_right = FixedConnection(
+            parent=cupboard.root,
+            child=door_right_body,
+            parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
+                x=door_x_rel, y=0.20, z=0
+            ),
+        )
+        world.add_connection(cupboard_C_door_right)
+        world.add_semantic_annotation(door_right)
         cupboard.add_door(door_right)
 
-        # Create and add handles
+        # Griffe manuell erstellen und direkt an die Türen hängen
         handle_scale = Scale(0.04, 0.02, 0.15)
-        handle_x = door_x - 0.01
 
-        handle_left = Handle.create_with_new_body_in_world(
-            name=PrefixedName("cupboard_handle_left"),
-            world=world,
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
-                x=handle_x, y=cupboard_pose.y - 0.04, z=cupboard_pose.z, yaw=np.pi
-            ),
-            scale=handle_scale,
+        # Left Handle
+        handle_left_geom = ShapeCollection([Box(scale=handle_scale, color=white)])
+        handle_left_body = Body(
+            name=PrefixedName("cupboard_handle_left_body"),
+            collision=handle_left_geom,
+            visual=handle_left_geom,
         )
+        handle_left = Handle(
+            root=handle_left_body, name=PrefixedName("cupboard_handle_left")
+        )
+
+        door_left_C_handle = FixedConnection(
+            parent=door_left.root,
+            child=handle_left_body,
+            parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
+                x=-0.01, y=0.16, z=0, yaw=np.pi
+            ),
+        )
+        world.add_connection(door_left_C_handle)
+        world.add_semantic_annotation(handle_left)
         door_left.add_handle(handle_left)
 
-        handle_right = Handle.create_with_new_body_in_world(
-            name=PrefixedName("cupboard_handle_right"),
-            world=world,
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
-                x=handle_x, y=cupboard_pose.y + 0.04, z=cupboard_pose.z, yaw=np.pi
+        # Right Handle
+        handle_right_geom = ShapeCollection([Box(scale=handle_scale, color=white)])
+        handle_right_body = Body(
+            name=PrefixedName("cupboard_handle_right_body"),
+            collision=handle_right_geom,
+            visual=handle_right_geom,
+        )
+        handle_right = Handle(
+            root=handle_right_body, name=PrefixedName("cupboard_handle_right")
+        )
+
+        door_right_C_handle = FixedConnection(
+            parent=door_right.root,
+            child=handle_right_body,
+            parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
+                x=-0.01, y=-0.16, z=0, yaw=np.pi
             ),
-            scale=handle_scale,
         )
         world.add_connection(door_right_C_handle)
         world.add_semantic_annotation(handle_right)
