@@ -12,7 +12,7 @@ from semantic_digital_twin.semantic_annotations.semantic_annotations import (
     Cabinet,
     Desk,
     Handle,
-    Shelf,
+    ShelfLayer,
 )
 from semantic_digital_twin.world import World
 import threading
@@ -457,7 +457,7 @@ def build_environment_furniture(world: World):
         shelf_scale = Scale(0.40, 0.76, 0.02)
 
         # Shelf 1 at height offset -0.5 (relative to center)
-        shelf_1 = Shelf.create_with_new_body_in_world(
+        shelf_1 = ShelfLayer.create_with_new_body_in_world(
             name=PrefixedName("cupboard_shelf_1"),
             world=world,
             world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
@@ -465,10 +465,10 @@ def build_environment_furniture(world: World):
             ),
             scale=shelf_scale
         )
-        cupboard.add_shelf(shelf_1)
+        cupboard.add_shelf_layer(shelf_1)
 
         # Shelf 2 at height offset +0.5
-        shelf_2 = Shelf.create_with_new_body_in_world(
+        shelf_2 = ShelfLayer.create_with_new_body_in_world(
             name=PrefixedName("cupboard_shelf_2"),
             world=world,
             world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
@@ -476,7 +476,7 @@ def build_environment_furniture(world: World):
             ),
             scale=shelf_scale
         )
-        cupboard.add_shelf(shelf_2)
+        cupboard.add_shelf_layer(shelf_2)
 
         # Create and add doors
         # The cupboard opening is at the negative X face.
