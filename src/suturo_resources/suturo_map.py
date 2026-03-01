@@ -449,13 +449,13 @@ def build_environment_furniture(world: World):
             scale=cupboard_scale,
             wall_thickness=0.02,
         )
-        # Den Schrank an 'root' hängen, damit die Koordinaten relativ zum Raum sind
+        # Connect the cupboard tp 'root' , to ensure that the coordinates are relative to the room
         cupboard_connection = cupboard.root.parent_connection
         world.remove_connection(cupboard_connection)
         cupboard_connection.parent = root
         world.add_connection(cupboard_connection)
 
-        # Regalböden manuell erstellen und direkt an den Schrank hängen
+        # create shelflayers manually and attach them directly to the cupboard
         shelf_scale = Scale(0.40, 0.76, 0.02)
 
         # Shelf 1
@@ -498,7 +498,7 @@ def build_environment_furniture(world: World):
         world.add_semantic_annotation(shelf_2)
         cupboard.add_shelf_layer(shelf_2)
 
-        # Türen manuell erstellen und direkt an den Schrank hängen
+        # Creating doors manually and attaching them directly to the cupboard
         door_x_rel = -(cupboard_scale.x / 2) - 0.01
         door_scale = Scale(0.02, 0.40, 2.02)
 
@@ -542,7 +542,7 @@ def build_environment_furniture(world: World):
         world.add_semantic_annotation(door_right)
         cupboard.add_door(door_right)
 
-        # Griffe manuell erstellen und direkt an die Türen hängen
+        # Creating handles manually and attaching them directly to the doors
         handle_scale = Scale(0.04, 0.02, 0.15)
 
         # Left Handle
