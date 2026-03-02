@@ -502,6 +502,7 @@ def build_environment_furniture(world: World):
         door_x_rel = -(cupboard_scale.x / 2) - 0.01
         door_scale = Scale(0.02, 0.40, 2.02)
 
+
         # Left Door
         door_left_geom = ShapeCollection([Box(scale=door_scale, color=white)])
         door_left_body = Body(
