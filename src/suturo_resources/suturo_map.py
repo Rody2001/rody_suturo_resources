@@ -1,3 +1,4 @@
+import numpy as np
 from semantic_digital_twin.adapters.ros.visualization.viz_marker import (
     VizMarkerPublisher,
 )
@@ -5,7 +6,7 @@ from semantic_digital_twin.semantic_annotations.semantic_annotations import (
     Table,
     Sofa,
     TrashCan,
-    Fridge, Counter_Top,
+    Fridge, Counter_Top, Wall, Cabinet,
 )
 from semantic_digital_twin.world import World
 import threading
@@ -39,7 +40,8 @@ def load_environment():
         ),
     )
     with world.modify_world():
-        world.add_connection(root_slam_C_root)
+        world.add_connection(root_slam_C_root) # ToDelete
+        # world.add_body(root)
 
     build_environment_walls(world)
     build_environment_furniture(world)
@@ -277,6 +279,10 @@ def build_environment_furniture(world: World):
     all_elements_annotations = []
     root = world.get_body_by_name("root")
 
+    root_transformation = HomogeneousTransformationMatrix.from_xyz_rpy(
+        x=0.33, y=0.28, yaw=0.10707963267
+    )
+
     trash_can = Cylinder(width=0.30, height=0.40, color=Color.BLACK())
     shape_geometry = ShapeCollection([trash_can])
     trash_can_body = Body(
@@ -298,43 +304,59 @@ def build_environment_furniture(world: World):
     )
     all_elements_connections.append(root_C_trash_can)
 
-    refrigerator = Box(scale=Scale(0.60, 0.658, 1.49))
-    shape_geometry = ShapeCollection([refrigerator])
-    refrigerator_body = Body(
-        name=PrefixedName("refrigerator_body"),
-        collision=shape_geometry,
-        visual=shape_geometry,
-    )
-    refrigerator_annotation = Fridge(root=refrigerator_body, name=PrefixedName("refrigerator_annotation"))
-    all_elements_annotations.append(refrigerator_annotation)
+    # refrigerator = Box(scale=Scale(0.60, 0.658, 1.49), color=Color.ORANGE())
+    # shape_geometry = ShapeCollection([refrigerator])
+    # refrigerator_body = Body(
+    #     name=PrefixedName("refrigerator_body"),
+    #     collision=shape_geometry,
+    #     visual=shape_geometry,
+    # )
+    # refrigerator_annotation = Fridge(root=refrigerator_body, name=PrefixedName("refrigerator_annotation"))
+    # all_elements_annotations.append(refrigerator_annotation)
+    #
+    # root_C_fridge = FixedConnection(
+    #     parent=world.root,
+    #     child=refrigerator_body,
+    #     parent_T_connection_expression= root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(
+    #         x=0.537, y=-2.181, z=0.745
+    #     ),
+    # )
+    # all_elements_connections.append(root_C_fridge)
+    with world.modify_world():
+        refrigerator = Fridge.create_with_new_body_in_world(
+            world=world,
+            name=PrefixedName("refrigerator"),
+            world_root_T_self=root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(
+                 x=0.537, y=-2.181, z=0.745, yaw=np.pi*3/2),
+            scale=Scale(x=0.60, y=0.658, z=1.49),
+        )
 
-    root_C_fridge = FixedConnection(
-        parent=root,
-        child=refrigerator_body,
-        parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
-            x=0.537, y=-2.181, z=0.745
-        ),
-    )
-    all_elements_connections.append(root_C_fridge)
-
-    counterTop = Box(scale=Scale(2.044, 0.658, 0.545), color=Color.BEIGE())
-    shape_geometry = ShapeCollection([counterTop])
-    counterTop_body = Body(
-        name=PrefixedName("counterTop_body"),
-        collision=shape_geometry,
-        visual=shape_geometry,
-    )
-    counterTop_annotation = Counter_Top(root=counterTop_body, name=PrefixedName("counterTop_annotation"))
-    all_elements_annotations.append(counterTop_annotation)
-
-    root_C_counterTop = FixedConnection(
-        parent=root,
-        child=counterTop_body,
-        parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
-            x=1.859, y=-2.181, z=0.2725
-        ),
-    )
-    all_elements_connections.append(root_C_counterTop)
+    # counterTop = Box(scale=Scale(2.044, 0.658, 0.545), color=Color.BEIGE())
+    # shape_geometry = ShapeCollection([counterTop])
+    # counterTop_body = Body(
+    #     name=PrefixedName("counterTop_body"),
+    #     collision=shape_geometry,
+    #     visual=shape_geometry,
+    # )
+    # counterTop_annotation = Counter_Top(root=counterTop_body, name=PrefixedName("counterTop_annotation"))
+    # all_elements_annotations.append(counterTop_annotation)
+    #
+    # root_C_counterTop = FixedConnection(
+    #     parent=root,
+    #     child=counterTop_body,
+    #     parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
+    #         x=1.859, y=-2.181, z=0.2725
+    #     ),
+    # )
+    # all_elements_connections.append(root_C_counterTop)
+        counterTop = Counter_Top.create_with_new_body_in_world(
+            world=world,
+            name=PrefixedName("counterTop"),
+            world_root_T_self= root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(x=1.859, y=-2.181, z=0.2725),
+            scale=Scale(x=2.044, y=0.658, z=0.545),
+        )
+        for color in counterTop.bodies[0].visual.shapes:
+            color.color = Color.BEIGE()
 
     ovenArea = Box(scale=Scale(1.20, 0.658, 1.49))
     shape_geometry = ShapeCollection([ovenArea])
@@ -361,128 +383,40 @@ def build_environment_furniture(world: World):
     table_annotation = Table(root=table_body, name=PrefixedName("table_annotation"))
     all_elements_annotations.append(table_annotation)
 
-    root_C_table = FixedConnection(
-        parent=root,
-        child=table_body,
-        parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
-            x=3.545, y=0.426, z=0.4225
-        ),
-    )
-    all_elements_connections.append(root_C_table)
+        cabinet = Cabinet.create_with_new_body_in_world(
+            world=world,
+            name=PrefixedName("cabinet"),
+            world_root_T_self=root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(x=4.8, y=4.72, z=1.01),
+            scale=Scale(x=0.43, y=0.80, z=2.02),
+        )
 
-    sofa = Box(scale=Scale(1.68, 0.94, 0.68), color=Color.BEIGE())
-    shape_geometry = ShapeCollection([sofa])
-    sofa_body = Body(
-        name=PrefixedName("sofa_body"), collision=shape_geometry, visual=shape_geometry
-    )
-    sofa_annotation = Sofa(root=sofa_body, name=PrefixedName("sofa_annotation"))
-    all_elements_annotations.append(sofa_annotation)
+        desk = Table.create_with_new_body_in_world(
+            world=world,
+            name=PrefixedName("desk"),
+            world_root_T_self=root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(x=0.05, y=1.28, z=0.375),
+            scale=Scale(x=0.60, y=1.20, z=0.75),
+        )
 
-    root_C_sofa = FixedConnection(
-        parent=root,
-        child=sofa_body,
-        parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
-            x=3.60, y=1.20, z=0.34
-        ),
-    )
-    all_elements_connections.append(root_C_sofa)
+        cooking_table = Table.create_with_new_body_in_world(
+            world=world,
+            name=PrefixedName("cooking_table"),
+            world_root_T_self=root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(x=1.325, y=5.99, z=0.355),
+            scale=Scale(1.75, 0.64, 0.71),
+        )
+        for color in cooking_table.bodies[0].visual.shapes:
+            color.color = Color.BEIGE()
 
-    lowerTable = Box(scale=Scale(0.37, 0.91, 0.44))
-    shape_geometry = ShapeCollection([lowerTable])
-    lowerTable_body = Body(
-        name=PrefixedName("lowerTable_body"),
-        collision=shape_geometry,
-        visual=shape_geometry,
-    )
-    lowerTable_annotation = Table(
-        root=lowerTable_body, name=PrefixedName("lowerTable_annotation")
-    )
-    all_elements_annotations.append(lowerTable_annotation)
+        dinning_table = Table.create_with_new_body_in_world(
+            world=world,
+            name=PrefixedName("dining_table"),
+            world_root_T_self=root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(x=2.59975, y=5.705, z=0.365),
+            scale=Scale(0.73, 1.18, 0.73),
+        )
+        for color in dinning_table.bodies[0].visual.shapes:
+            color.color = Color.BEIGE()
 
-    root_C_lowerTable = FixedConnection(
-        parent=root,
-        child=lowerTable_body,
-        parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
-            x=4.22, y=2.22, z=0.22
-        ),
-    )
-    all_elements_connections.append(root_C_lowerTable)
 
-    cabinet = Box(scale=Scale(0.43, 0.80, 2.02))
-    shape_geometry = ShapeCollection([cabinet])
-    cabinet_body = Body(
-        name=PrefixedName("cabinet_body"),
-        collision=shape_geometry,
-        visual=shape_geometry,
-    )
 
-    root_C_cabinet = FixedConnection(
-        parent=root,
-        child=cabinet_body,
-        parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
-            x=4.8, y=4.72, z=1.01
-        ),
-    )
-    all_elements_connections.append(root_C_cabinet)
-
-    desk = Box(scale=Scale(0.60, 1.20, 0.75))
-    shape_geometry = ShapeCollection([desk])
-    desk_body = Body(
-        name=PrefixedName("desk_body"), collision=shape_geometry, visual=shape_geometry
-    )
-
-    root_C_desk = FixedConnection(
-        parent=root,
-        child=desk_body,
-        parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
-            x=0.05, y=1.28, z=0.375
-        ),
-    )
-    all_elements_connections.append(root_C_desk)
-
-    cookingTable = Box(scale=Scale(1.75, 0.64, 0.71), color=Color.BEIGE())
-    shape_geometry = ShapeCollection([cookingTable])
-    cookingTable_body = Body(
-        name=PrefixedName("cookingTable_body"),
-        collision=shape_geometry,
-        visual=shape_geometry,
-    )
-    cookingTable_annotation = Table(
-        root=cookingTable_body, name=PrefixedName("cookingTable_annotation")
-    )
-    all_elements_annotations.append(cookingTable_annotation)
-
-    root_C_cookingTable = FixedConnection(
-        parent=root,
-        child=cookingTable_body,
-        parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
-            x=1.325, y=5.99, z=0.355
-        ),
-    )
-    all_elements_connections.append(root_C_cookingTable)
-
-    diningTable = Box(scale=Scale(0.73, 1.18, 0.73), color=Color.BEIGE())
-    shape_geometry = ShapeCollection([diningTable])
-    diningTable_body = Body(
-        name=PrefixedName("diningTable_body"),
-        collision=shape_geometry,
-        visual=shape_geometry,
-    )
-    diningTable_annotation = Table(
-        root=diningTable_body, name=PrefixedName("diningTable_annotation")
-    )
-    all_elements_annotations.append(diningTable_annotation)
-
-    root_C_diningTable = FixedConnection(
-        parent=root,
-        child=diningTable_body,
-        parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
-            x=2.59975, y=5.705, z=0.365
-        ),
-    )
-    all_elements_connections.append(root_C_diningTable)
-
-    with world.modify_world():
         for annotation in all_elements_annotations:
             world.add_semantic_annotation(annotation)
         for conn in all_elements_connections:

@@ -25,13 +25,13 @@ def test_query_semantic_annotations_on_surfaces():
     Tests that giving Table annotations gives a list of the correct annotation on top.
     """
     world = test_load_world()
-    table1 = world.get_semantic_annotation_by_name("fruit_table_annotation")
-    table2 = world.get_semantic_annotation_by_name("vegetable_table_annotation")
-    table3 = world.get_semantic_annotation_by_name("empty_table_annotation")
-    apple = world.get_semantic_annotation_by_name("apple_annotation")
-    carrot = world.get_semantic_annotation_by_name("carrot_annotation")
-    orange = world.get_semantic_annotation_by_name("orange_annotation")
-    lettuce = world.get_semantic_annotation_by_name("lettuce_annotation")
+    table1 = world.get_semantic_annotation_by_name("fruit_table")
+    table2 = world.get_semantic_annotation_by_name("vegetable_table")
+    table3 = world.get_semantic_annotation_by_name("empty_table")
+    apple = world.get_semantic_annotation_by_name("apple")
+    carrot = world.get_semantic_annotation_by_name("carrot")
+    orange = world.get_semantic_annotation_by_name("orange")
+    lettuce = world.get_semantic_annotation_by_name("lettuce")
     assert query_semantic_annotations_on_surfaces([table1, table2], world).tolist() == [
         apple,
         orange,
@@ -53,13 +53,13 @@ def test_query_get_next_object_euclidean_x_y():
     """
     world = test_load_world()
     toya = world.get_body_by_name("base_link_body")
-    table1 = world.get_semantic_annotation_by_name("fruit_table_annotation")
-    table2 = world.get_semantic_annotation_by_name("vegetable_table_annotation")
-    table3 = world.get_semantic_annotation_by_name("empty_table_annotation")
-    apple = world.get_semantic_annotation_by_name("apple_annotation")
-    carrot = world.get_semantic_annotation_by_name("carrot_annotation")
-    orange = world.get_semantic_annotation_by_name("orange_annotation")
-    lettuce = world.get_semantic_annotation_by_name("lettuce_annotation")
+    table1 = world.get_semantic_annotation_by_name("fruit_table")
+    table2 = world.get_semantic_annotation_by_name("vegetable_table")
+    table3 = world.get_semantic_annotation_by_name("empty_table")
+    apple = world.get_semantic_annotation_by_name("apple")
+    carrot = world.get_semantic_annotation_by_name("carrot")
+    orange = world.get_semantic_annotation_by_name("orange")
+    lettuce = world.get_semantic_annotation_by_name("lettuce")
 
     assert query_get_next_object_euclidean_x_y(toya, table1).tolist() == [orange, apple]
     assert query_get_next_object_euclidean_x_y(toya, table2).tolist() == [
@@ -78,16 +78,16 @@ def test_query_surface_of_most_similar_obj():
     no valid candidates.
     """
     world = test_load_world()
-    table1 = world.get_semantic_annotation_by_name("fruit_table_annotation")
-    table2 = world.get_semantic_annotation_by_name("vegetable_table_annotation")
-    table3 = world.get_semantic_annotation_by_name("empty_table_annotation")
-    table4 = world.get_semantic_annotation_by_name("empty_table2_annotation")
+    table1 = world.get_semantic_annotation_by_name("fruit_table")
+    table2 = world.get_semantic_annotation_by_name("vegetable_table")
+    table3 = world.get_semantic_annotation_by_name("empty_table")
+    table4 = world.get_semantic_annotation_by_name("empty_table2")
 
-    banana = world.get_semantic_annotation_by_name("banana_annotation")
-    apple = world.get_semantic_annotation_by_name("apple_annotation")
-    carrot = world.get_semantic_annotation_by_name("carrot_annotation")
-    orange = world.get_semantic_annotation_by_name("orange_annotation")
-    lettuce = world.get_semantic_annotation_by_name("lettuce_annotation")
+    banana = world.get_semantic_annotation_by_name("banana")
+    apple = world.get_semantic_annotation_by_name("apple")
+    carrot = world.get_semantic_annotation_by_name("carrot")
+    orange = world.get_semantic_annotation_by_name("orange")
+    lettuce = world.get_semantic_annotation_by_name("lettuce")
 
     # choosing the correct table
     assert query_surface_of_most_similar_obj(banana, [table1, table2, table3]) == table1
@@ -114,9 +114,9 @@ def test_query_body_by_color():
     within the test world.
     """
     world1 = test_load_world()
-    apple = world1.get_semantic_annotation_by_name("apple_annotation")
-    orange = world1.get_semantic_annotation_by_name("orange_annotation")
-    carrot = world1.get_semantic_annotation_by_name("carrot_annotation")
+    apple = world1.get_semantic_annotation_by_name("apple")
+    orange = world1.get_semantic_annotation_by_name("orange")
+    carrot = world1.get_semantic_annotation_by_name("carrot")
 
     assert query_annotations_by_color(Color.RED(), world1) == [apple]
     assert query_annotations_by_color(Color.ORANGE(), world1) == [orange, carrot]
