@@ -234,7 +234,7 @@ def build_environment_furniture(world: World):
         shelf_scale = Scale(0.40, 0.76, 0.02)
 
         # Shelf 1
-        shelf_1_geom = ShapeCollection([Box(scale=shelf_scale, color=white)])
+        shelf_1_geom = ShapeCollection([Box(scale=shelf_scale, color=Color.WHITE())])
         shelf_1_body = Body(
             name=PrefixedName("cupboard_shelf_1_body"),
             collision=shelf_1_geom,
@@ -254,7 +254,7 @@ def build_environment_furniture(world: World):
         cupboard.add_shelf_layer(shelf_1)
 
         # Shelf 2
-        shelf_2_geom = ShapeCollection([Box(scale=shelf_scale, color=white)])
+        shelf_2_geom = ShapeCollection([Box(scale=shelf_scale, color=Color.WHITE())])
         shelf_2_body = Body(
             name=PrefixedName("cupboard_shelf_2_body"),
             collision=shelf_2_geom,
@@ -304,7 +304,7 @@ def build_environment_furniture(world: World):
         world.add_semantic_annotation(hinge_left)
 
         # Create left door
-        door_left_geom = ShapeCollection([Box(scale=door_scale, color=white)])
+        door_left_geom = ShapeCollection([Box(scale=door_scale, color=Color.WHITE())])
         door_left_body = Body(
             name=PrefixedName("cupboard_door_left_body"),
             collision=door_left_geom,
@@ -345,7 +345,7 @@ def build_environment_furniture(world: World):
         world.add_connection(cupboard_C_hinge_right)
         world.add_semantic_annotation(hinge_right)
 
-        door_right_geom = ShapeCollection([Box(scale=door_scale, color=white)])
+        door_right_geom = ShapeCollection([Box(scale=door_scale, color=Color.WHITE())])
         door_right_body = Body(
             name=PrefixedName("cupboard_door_right_body"),
             collision=door_right_geom,
@@ -371,7 +371,7 @@ def build_environment_furniture(world: World):
         handle_z_local = 0.0
 
         # Left Handle
-        handle_left_geom = ShapeCollection([Box(scale=handle_scale, color=white)])
+        handle_left_geom = ShapeCollection([Box(scale=handle_scale, color=Color.WHITE())])
         handle_left_body = Body(
             name=PrefixedName("cupboard_handle_left_body"),
             collision=handle_left_geom,
@@ -393,7 +393,7 @@ def build_environment_furniture(world: World):
         door_left.add_handle(handle_left)
 
         # Right Handle
-        handle_right_geom = ShapeCollection([Box(scale=handle_scale, color=white)])
+        handle_right_geom = ShapeCollection([Box(scale=handle_scale, color=Color.WHITE())])
         handle_right_body = Body(
             name=PrefixedName("cupboard_handle_right_body"),
             collision=handle_right_geom,
