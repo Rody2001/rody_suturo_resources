@@ -26,12 +26,16 @@ from semantic_digital_twin.spatial_types.spatial_types import (
     HomogeneousTransformationMatrix,
     Point3,
 )
+from semantic_digital_twin.spatial_types.derivatives import DerivativeMap
 from semantic_digital_twin.world_description.connections import FixedConnection, RevoluteConnection
 from semantic_digital_twin.world_description.geometry import Box, Scale, Color
 from semantic_digital_twin.world_description.geometry import Cylinder
 from semantic_digital_twin.world_description.shape_collection import ShapeCollection
 from semantic_digital_twin.world_description.world_entity import Body
 from semantic_digital_twin.spatial_types.spatial_types import Vector3
+from semantic_digital_twin.world_description.degree_of_freedom import (
+    DegreeOfFreedomLimits,
+)
 
 def load_environment():
     """
@@ -212,14 +216,13 @@ def build_environment_furniture(world: World):
     )
 
     with world.modify_world():
-        cupboard_pose = Point3(4.72, 4.72, 1.01)
         cupboard_scale = Scale(0.43, 0.80, 2.02)
 
         cupboard = Cupboard.create_with_new_body_in_world(
             name=PrefixedName("cupboard_annotation"),
             world=world,
             world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
-                x=cupboard_pose.x, y=cupboard_pose.y, z=cupboard_pose.z
+                x=4.72, y=4.72, z=1.01
             ),
             scale=cupboard_scale,
             wall_thickness=0.02,
@@ -283,6 +286,13 @@ def build_environment_furniture(world: World):
         door_x_rel = -(cupboard_scale.x / 2) - 0.01
         door_scale = Scale(0.02, 0.40, door_height)
 
+        # Define limits for doors (0 to -90 degrees)
+        lower_limit = DerivativeMap[float]()
+        lower_limit.position = -np.pi / 2
+        upper_limit = DerivativeMap[float]()
+        upper_limit.position = 0.0
+        door_limits = DegreeOfFreedomLimits(lower=lower_limit, upper=upper_limit)
+
         # Left Door (Open via Hinge)
         # Create Hinge for the left door
         hinge_left_body = Body(name=PrefixedName("cupboard_hinge_left_body"))
@@ -299,9 +309,13 @@ def build_environment_furniture(world: World):
                 x=door_x_rel, y=-0.40, z=door_z_rel, yaw=np.pi / 2
             ),
             axis=Vector3.Z(),
+            limits=door_limits,
         )
         world.add_connection(cupboard_C_hinge_left)
         world.add_semantic_annotation(hinge_left)
+
+        # Test hinge rotation
+        cupboard_C_hinge_left.degrees_of_freedom[0].position = -0.5
 
         # Create left door
         door_left_geom = ShapeCollection([Box(scale=door_scale, color=Color.WHITE())])
@@ -341,6 +355,7 @@ def build_environment_furniture(world: World):
                 x=door_x_rel, y=0.40, z=door_z_rel
             ),
             axis=Vector3.Z(),
+            limits=door_limits,
         )
         world.add_connection(cupboard_C_hinge_right)
         world.add_semantic_annotation(hinge_right)
