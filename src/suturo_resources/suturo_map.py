@@ -209,8 +209,6 @@ def build_environment_furniture(world: World):
             world_root_T_self= root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(x=1.859, y=-2.181, z=0.2725),
             scale=Scale(x=2.044, y=0.658, z=0.545),
         )
-        for color in counterTop.bodies[0].visual.shapes:
-            color.color = Color.BEIGE()
 
     ovenArea = Box(scale=Scale(1.20, 0.658, 1.49))
     shape_geometry = ShapeCollection([ovenArea])
@@ -242,8 +240,6 @@ def build_environment_furniture(world: World):
             world_root_T_self=root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(x=3.60, y=1.20, z=0.34),
             scale=Scale(x=1.68, y=0.94, z=0.68),
         )
-        for color in sofa.bodies[0].visual.shapes:
-            color.color = Color.BEIGE()
 
         lowerTable = Table.create_with_new_body_in_world(
             world=world,
@@ -272,8 +268,6 @@ def build_environment_furniture(world: World):
             world_root_T_self=root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(x=1.325, y=5.99, z=0.355),
             scale=Scale(1.75, 0.64, 0.71),
         )
-        for color in cooking_table.bodies[0].visual.shapes:
-            color.color = Color.BEIGE()
 
         dinning_table = Table.create_with_new_body_in_world(
             world=world,
@@ -281,8 +275,6 @@ def build_environment_furniture(world: World):
             world_root_T_self=root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(x=2.59975, y=5.705, z=0.365),
             scale=Scale(0.73, 1.18, 0.73),
         )
-        for color in dinning_table.bodies[0].visual.shapes:
-            color.color = Color.BEIGE()
 
         world.add_connection(root_C_ovenArea)
     return world
