@@ -219,7 +219,7 @@ def build_environment_furniture(world: World):
             name=PrefixedName("cupboard_annotation"),
             world=world,
             world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
-                x=4.72, y=4.72, z=1.01
+                x=4.55, y=4.72, z=1.01
             ),
             scale=cupboard_scale,
             wall_thickness=0.02,
