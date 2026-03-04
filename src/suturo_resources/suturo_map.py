@@ -1,4 +1,3 @@
-import numpy as np
 from semantic_digital_twin.adapters.ros.visualization.viz_marker import (
     VizMarkerPublisher,
 )
@@ -9,8 +8,6 @@ from semantic_digital_twin.semantic_annotations.semantic_annotations import (
     Fridge, Counter_Top, Wall, Cabinet,
     Cupboard,
     Door,
-    Fridge,
-    Cabinet,
     Desk,
     Handle,
     ShelfLayer,
@@ -34,7 +31,7 @@ from semantic_digital_twin.world_description.shape_collection import ShapeCollec
 from semantic_digital_twin.world_description.world_entity import Body
 from semantic_digital_twin.spatial_types.spatial_types import Vector3
 from semantic_digital_twin.world_description.degree_of_freedom import (
-    DegreeOfFreedomLimits,
+    DegreeOfFreedomLimits, DegreeOfFreedom,
 )
 
 def load_environment():
@@ -286,12 +283,16 @@ def build_environment_furniture(world: World):
         door_x_rel = -(cupboard_scale.x / 2) - 0.01
         door_scale = Scale(0.02, 0.40, door_height)
 
-        # Define limits for doors (0 to -90 degrees)
-        lower_limit = DerivativeMap[float]()
-        lower_limit.position = -np.pi / 2
-        upper_limit = DerivativeMap[float]()
-        upper_limit.position = 0.0
-        door_limits = DegreeOfFreedomLimits(lower=lower_limit, upper=upper_limit)
+        # Define limits for doors
+        # Left door opens outwards (0 to +90 degrees)
+        left_lower = DerivativeMap[float](position=0.0)
+        left_upper = DerivativeMap[float](position=np.pi / 2)
+        left_door_limits = DegreeOfFreedomLimits(lower=left_lower, upper=left_upper)
+
+        # Right door opens outwards (-90 to 0 degrees)
+        right_lower = DerivativeMap[float](position=-np.pi / 2)
+        right_upper = DerivativeMap[float](position=0.0)
+        right_door_limits = DegreeOfFreedomLimits(lower=right_lower, upper=right_upper)
 
         # Left Door (Open via Hinge)
         # Create Hinge for the left door
@@ -306,16 +307,16 @@ def build_environment_furniture(world: World):
             parent=cupboard.root,
             child=hinge_left_body,
             parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
-                x=door_x_rel, y=-0.40, z=door_z_rel, yaw=np.pi / 2
+                x=door_x_rel, y=-0.40, z=door_z_rel
             ),
             axis=Vector3.Z(),
-            limits=door_limits,
+            dof_limits=left_door_limits,
         )
         world.add_connection(cupboard_C_hinge_left)
         world.add_semantic_annotation(hinge_left)
 
-        # Test hinge rotation
-        cupboard_C_hinge_left.degrees_of_freedom[0].position = -0.5
+        # Open left door by setting the joint position
+        cupboard_C_hinge_left.position = np.pi / 2
 
         # Create left door
         door_left_geom = ShapeCollection([Box(scale=door_scale, color=Color.WHITE())])
@@ -355,7 +356,7 @@ def build_environment_furniture(world: World):
                 x=door_x_rel, y=0.40, z=door_z_rel
             ),
             axis=Vector3.Z(),
-            limits=door_limits,
+            dof_limits=right_door_limits,
         )
         world.add_connection(cupboard_C_hinge_right)
         world.add_semantic_annotation(hinge_right)
@@ -479,13 +480,6 @@ def build_environment_furniture(world: World):
             name=PrefixedName("lowerTable"),
             world_root_T_self=root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(x=4.22, y=2.22, z=0.22),
             scale=Scale(x=0.37, y=0.91, z=0.44),
-        )
-
-        cabinet = Cabinet.create_with_new_body_in_world(
-            world=world,
-            name=PrefixedName("cabinet"),
-            world_root_T_self=root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(x=4.8, y=4.72, z=1.01),
-            scale=Scale(x=0.43, y=0.80, z=2.02),
         )
 
         desk = Table.create_with_new_body_in_world(
