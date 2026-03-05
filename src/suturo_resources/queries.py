@@ -154,6 +154,7 @@ def query_annotations_by_color(color: Color, objects: list[SemanticAnnotation]) 
     return filtered_annotations
 
 
+
 # def query_object_destination(world: World, obj: HasDestination) -> List[SemanticAnnotation]:
 #     """
 #     Query suitable destination semantic annotations for a given object.
