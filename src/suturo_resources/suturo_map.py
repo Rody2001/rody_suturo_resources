@@ -178,7 +178,6 @@ def build_environment_furniture(world: World):
     Connects furniture bodies and room structures hierarchically under the main root.
     Returns the updated World object with furniture integrated.
     """
-    # all_elements_connections = []
     root = world.root
 
     root_transformation = HomogeneousTransformationMatrix.from_xyz_rpy(
@@ -275,10 +274,6 @@ def build_environment_furniture(world: World):
         for color in cooking_table.bodies[0].visual.shapes:
             color.color = Color.BEIGE()
 
-    with world.modify_world():
-        for conn in all_elements_connections:
-            world.add_connection(conn)
-        world.add_semantic_annotations(all_elements_annotations)
 
         world.add_connection(root_C_ovenArea)
     return world
