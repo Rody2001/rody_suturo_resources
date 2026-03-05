@@ -1,7 +1,7 @@
 import math
 from typing import List, Union, Optional
-
-from krrood.entity_query_language.factories import variable_from, entity, flat_variable
+from entity_query_language.symbolic import QueryObjectDescriptor
+from krrood.entity_query_language.factories import variable_from, entity
 from krrood.entity_query_language.query.query import Entity
 from krrood.utils import inheritance_path_length
 from semantic_digital_twin.reasoning.predicates import (
@@ -11,7 +11,7 @@ from semantic_digital_twin.reasoning.predicates import (
 )
 from semantic_digital_twin.semantic_annotations.mixins import HasSupportingSurface, IsPerceivable
 from semantic_digital_twin.world import World
-from semantic_digital_twin.world_description.geometry import Color
+from semantic_digital_twin.semantic_annotations.mixins import HasDestination
 
 from semantic_digital_twin.world_description.world_entity import (
     Body,
@@ -124,31 +124,25 @@ def query_surface_of_most_similar_obj(
         if is_supported_by(most_similar.bodies[0], supporting_surface.bodies[0]):
             return supporting_surface
 
-
-def query_annotations_by_color(color: Color, objects: list[SemanticAnnotation]) -> List[SemanticAnnotation]:
+def query_object_destination(world: World, obj: HasDestination) -> List[SemanticAnnotation]:
     """
-    Queries and retrieves a list of annotations from another one that match
-    the specified color based on their visual properties.
+    Query suitable destination semantic annotations for a given object.
 
-    :param color: The color to filter annotations by.
-    :param objects: The list of the unfiltered annotations.
+    The object's class defines one or multiple preferred destination types via
+    the `destination_class_names` class variable.
 
-    :return: List[SemanticAnnotation]: A list of annotations from the world whose primary shape's
-    visual color matches the specified color.
+    :param world: The world containing semantic annotations.
+    :param obj: The object to be brought somewhere (must support HasDestination).
+    :return: A list of all destination semantic annotations found in the world.
+             The list may be empty.
     """
-    all_bodies = []
-    for obj in objects:
-        all_bodies.append(obj.bodies[0])
+    dest_types = obj.destination_class_names
 
-    filtered_bodies = []
+    if not dest_types:
+        return []
 
-    for body in all_bodies:
-        if body.visual and body.collision is None:
-            continue
-        shapes = body.visual.shapes or body.collision.shapes
-        if shapes[0].color == color:
-            filtered_bodies.append(body)
-    filtered_annotations = []
-    for body in filtered_bodies:
-        filtered_annotations.append(list(body._semantic_annotations)[0])
-    return filtered_annotations
+    # Result
+    results: List[SemanticAnnotation] = []
+    for dest_type in dest_types:
+        results.extend(world.get_semantic_annotations_by_type(dest_type))
+    return results

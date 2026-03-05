@@ -275,14 +275,10 @@ def build_environment_furniture(world: World):
         for color in cooking_table.bodies[0].visual.shapes:
             color.color = Color.BEIGE()
 
-        dinning_table = Table.create_with_new_body_in_world(
-            world=world,
-            name=PrefixedName("dining_table"),
-            world_root_T_self=root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(x=2.59975, y=5.705, z=0.365),
-            scale=Scale(0.73, 1.18, 0.73),
-        )
-        for color in dinning_table.bodies[0].visual.shapes:
-            color.color = Color.BEIGE()
+    with world.modify_world():
+        for conn in all_elements_connections:
+            world.add_connection(conn)
+        world.add_semantic_annotations(all_elements_annotations)
 
         world.add_connection(root_C_ovenArea)
     return world
