@@ -11,6 +11,7 @@ from semantic_digital_twin.reasoning.predicates import (
 )
 from semantic_digital_twin.semantic_annotations.mixins import HasSupportingSurface, IsPerceivable
 from semantic_digital_twin.world import World
+import semantic_digital_twin.semantic_annotations.semantic_annotations
 #from semantic_digital_twin.semantic_annotations.mixins import HasDestination
 from semantic_digital_twin.world_description.geometry import Color
 
@@ -153,6 +154,24 @@ def query_annotations_by_color(color: Color, objects: list[SemanticAnnotation]) 
         filtered_annotations.append(list(body._semantic_annotations)[0])
     return filtered_annotations
 
+
+def query_class_by_label(label: str) -> Optional[type]:
+    """
+    Finds the class whose name is contained within the given label.
+    It searches through all subclasses of IsPerceivable.
+
+    :param label: The string input from perception (e.g., "bowl_collapsable_yellowgrey").
+    :return: The matching class (e.g., Bowl) or None if no match is found.
+    """
+    all_semantic_classes = IsPerceivable.__subclasses__()
+    label_lower = label.lower()
+    print(label_lower)
+
+    for cls in all_semantic_classes:
+        class_name = cls.__name__.lower()
+        if class_name in label_lower:
+            return cls
+    return None
 
 
 # def query_object_destination(world: World, obj: HasDestination) -> List[SemanticAnnotation]:
