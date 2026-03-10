@@ -1,9 +1,10 @@
 import math
 from typing import List, Union, Optional
 #from entity_query_language.symbolic import QueryObjectDescriptor
-from krrood.entity_query_language.factories import variable_from, entity, flat_variable
+from krrood.entity_query_language.factories import variable_from, entity, flat_variable, in_, the, contains
 from krrood.entity_query_language.query.query import Entity
-from krrood.utils import inheritance_path_length
+from krrood.entity_query_language.predicate import symbolic_function
+from krrood.utils import inheritance_path_length, recursive_subclasses
 from semantic_digital_twin.reasoning.predicates import (
     is_supported_by,
     compute_euclidean_distance_2d,
@@ -19,6 +20,9 @@ from semantic_digital_twin.world_description.world_entity import (
     Body,
     SemanticAnnotation,
 )
+
+from conftest import test_load_world
+
 
 def query_semantic_annotations_on_surfaces(
     supporting_surfaces: List[SemanticAnnotation], world: World
@@ -165,13 +169,32 @@ def query_class_by_label(label: str) -> Optional[type]:
     """
     all_semantic_classes = IsPerceivable.__subclasses__()
     label_lower = label.lower()
-    print(label_lower)
 
     for cls in all_semantic_classes:
         class_name = cls.__name__.lower()
         if class_name in label_lower:
             return cls
     return None
+
+@symbolic_function
+def class_name_in_label(cls: type, label: str) -> bool:
+    """Check if the class name is contained in the label."""
+    return cls.__name__.lower() in label.lower()
+
+
+def query_class_by_label1(label: str) -> Optional[type]:
+    """
+    Finds the class whose name is contained within the given label.
+    It searches through all subclasses of IsPerceivable.
+
+    :param label: The string input from perception (e.g., "bowl_collapsable_yellowgrey").
+    :return: The matching class (e.g., Bowl) or None if no match is found.
+    """
+    semantic_class = variable_from(recursive_subclasses(IsPerceivable))
+    matching_class = entity(semantic_class).where(
+        class_name_in_label(semantic_class, label)
+    ).first()
+    return matching_class
 
 
 # def query_object_destination(world: World, obj: HasDestination) -> List[SemanticAnnotation]:
