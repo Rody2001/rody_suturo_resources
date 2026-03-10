@@ -12,7 +12,6 @@ from semantic_digital_twin.reasoning.predicates import (
 )
 from semantic_digital_twin.semantic_annotations.mixins import HasSupportingSurface, IsPerceivable
 from semantic_digital_twin.world import World
-import semantic_digital_twin.semantic_annotations.semantic_annotations
 #from semantic_digital_twin.semantic_annotations.mixins import HasDestination
 from semantic_digital_twin.world_description.geometry import Color
 
@@ -159,30 +158,13 @@ def query_annotations_by_color(color: Color, objects: list[SemanticAnnotation]) 
     return filtered_annotations
 
 
-def query_class_by_label(label: str) -> Optional[type]:
-    """
-    Finds the class whose name is contained within the given label.
-    It searches through all subclasses of IsPerceivable.
-
-    :param label: The string input from perception (e.g., "bowl_collapsable_yellowgrey").
-    :return: The matching class (e.g., Bowl) or None if no match is found.
-    """
-    all_semantic_classes = IsPerceivable.__subclasses__()
-    label_lower = label.lower()
-
-    for cls in all_semantic_classes:
-        class_name = cls.__name__.lower()
-        if class_name in label_lower:
-            return cls
-    return None
-
 @symbolic_function
 def class_name_in_label(cls: type, label: str) -> bool:
     """Check if the class name is contained in the label."""
     return cls.__name__.lower() in label.lower()
 
 
-def query_class_by_label1(label: str) -> Optional[type]:
+def query_class_by_label(label: str) -> Optional[type]:
     """
     Finds the class whose name is contained within the given label.
     It searches through all subclasses of IsPerceivable.
@@ -193,8 +175,8 @@ def query_class_by_label1(label: str) -> Optional[type]:
     semantic_class = variable_from(recursive_subclasses(IsPerceivable))
     matching_class = entity(semantic_class).where(
         class_name_in_label(semantic_class, label)
-    ).first()
-    return matching_class
+    )
+    return None if matching_class.tolist() == [] else matching_class.first()
 
 
 # def query_object_destination(world: World, obj: HasDestination) -> List[SemanticAnnotation]:
