@@ -1,4 +1,4 @@
-from semantic_digital_twin.datastructures.prefixed_name import PrefixedName
+from semantic_digital_twin.semantic_annotations.semantic_annotations import *
 from semantic_digital_twin.world import World
 from semantic_digital_twin.world_description.geometry import Color
 
@@ -6,7 +6,7 @@ from conftest import test_load_world
 from suturo_resources.queries import (
     query_surface_of_most_similar_obj,
     query_semantic_annotations_on_surfaces,
-    query_get_next_object_euclidean_x_y, query_annotations_by_color,
+    query_get_next_object_euclidean_x_y, query_annotations_by_color, query_class_by_label,
 )
 from suturo_resources.suturo_map import load_environment
 
@@ -124,3 +124,13 @@ def test_query_body_by_color():
     assert query_annotations_by_color(Color.ORANGE(), [apple, orange]) == [orange]
     assert query_annotations_by_color(Color.BLUE(), [apple, orange,carrot]) == []
     assert query_annotations_by_color(Color.ORANGE(), (query_semantic_annotations_on_surfaces([table1, table2], world).evaluate())) == [orange, carrot]
+
+def test_query_class_by_label():
+    """
+    Tests the query_class_by_label function by verifying the retrieval of the semantic class
+    """
+    assert query_class_by_label("salt_aquasale_mill_transparent") == Salt
+    assert query_class_by_label("milk_jumbo_pack_voll") == Milk
+    assert query_class_by_label("bowl_collapsable_yellowgrey") == Bowl
+
+    assert query_class_by_label("unknown_object") is None
