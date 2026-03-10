@@ -12,7 +12,6 @@ from semantic_digital_twin.reasoning.predicates import (
 )
 from semantic_digital_twin.semantic_annotations.mixins import HasSupportingSurface, IsPerceivable
 from semantic_digital_twin.world import World
-import semantic_digital_twin.semantic_annotations.semantic_annotations
 #from semantic_digital_twin.semantic_annotations.mixins import HasDestination
 from semantic_digital_twin.world_description.geometry import Color
 
