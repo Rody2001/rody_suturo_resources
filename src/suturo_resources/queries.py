@@ -20,7 +20,6 @@ from semantic_digital_twin.world_description.world_entity import (
     SemanticAnnotation,
 )
 
-from conftest import test_load_world
 
 
 def query_semantic_annotations_on_surfaces(
@@ -178,7 +177,42 @@ def query_class_by_label(label: str) -> Optional[type]:
     )
     return None if matching_class.tolist() == [] else matching_class.first()
 
+def query_sort_by_size(annotations: List[SemanticAnnotation], order: Optional[bool]=True) -> List[SemanticAnnotation]:
+    """
+    Sorts a list of SemanticAnnotations by volume in descending order (largest to smallest).
+    Volume is calculated by multiplying the scale dimensions (x * y * z) of the object's shape.
 
+    :param annotations: List of SemanticAnnotation objects to sort.
+    :return: List of SemanticAnnotation objects sorted by volume (largest to smallest).
+    """
+    newList = []
+    for annotation in annotations:
+        if not annotation.bodies:
+            continue
+        else:
+            newList.append(annotation)
+    def get_volume(annotation: SemanticAnnotation) -> float:
+        """Calculate volume from the annotation's body scale."""
+        body = annotation.bodies[0]
+
+        # Get shapes from collision if available, otherwise from visual
+        if body.collision is not None:
+            shapes = body.collision.shapes
+        # elif body.visual is not None:
+        #     shapes = body.visual.shapes
+        else:
+            return 0.0
+
+        # Get the first shape's scale
+        if shapes and len(shapes) > 0:
+            scale = shapes[0].scale
+            return scale.x * scale.y * scale.z
+
+        return 0.0
+
+    return sorted(newList, key=get_volume, reverse=order)
+
+########################################################
 # def query_object_destination(world: World, obj: HasDestination) -> List[SemanticAnnotation]:
 #     """
 #     Query suitable destination semantic annotations for a given object.
