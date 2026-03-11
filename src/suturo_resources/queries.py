@@ -183,14 +183,14 @@ def query_sort_by_size(annotations: List[SemanticAnnotation], order: Optional[bo
     Volume is calculated by multiplying the scale dimensions (x * y * z) of the object's shape.
 
     :param annotations: List of SemanticAnnotation objects to sort.
+    :param order: Whether to sort in ascending or descending order (default is True).
     :return: List of SemanticAnnotation objects sorted by volume (largest to smallest).
     """
     newList = []
     for annotation in annotations:
-        if not annotation.bodies:
-            continue
-        else:
+        if annotation.bodies:
             newList.append(annotation)
+
     def get_volume(annotation: SemanticAnnotation) -> float:
         """Calculate volume from the annotation's body scale."""
         body = annotation.bodies[0]
@@ -198,8 +198,6 @@ def query_sort_by_size(annotations: List[SemanticAnnotation], order: Optional[bo
         # Get shapes from collision if available, otherwise from visual
         if body.collision is not None:
             shapes = body.collision.shapes
-        # elif body.visual is not None:
-        #     shapes = body.visual.shapes
         else:
             return 0.0
 
