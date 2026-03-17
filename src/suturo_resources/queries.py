@@ -1,7 +1,7 @@
 import math
 from typing import List, Union, Optional
 #from entity_query_language.symbolic import QueryObjectDescriptor
-from krrood.entity_query_language.factories import variable_from, entity, flat_variable, in_, the, contains
+from krrood.entity_query_language.factories import variable_from, entity, flat_variable, in_, the, contains, not_
 from krrood.entity_query_language.query.query import Entity
 from krrood.entity_query_language.predicate import symbolic_function
 from krrood.utils import inheritance_path_length, recursive_subclasses
@@ -128,6 +128,97 @@ def query_surface_of_most_similar_obj(
     for supporting_surface in supporting_surfaces:
         if is_supported_by(most_similar.bodies[0], supporting_surface.bodies[0]):
             return supporting_surface
+
+@symbolic_function
+def compute_min_inheritance_distance(obj: SemanticAnnotation, target_type: type) -> float:
+    """
+    Compute the minimum inheritance path length between an object and a target type.
+    Returns infinity if no inheritance path exists.
+    """
+    best_distance = math.inf
+    for cls in type(obj).__mro__:
+        dist = inheritance_path_length(target_type, cls)
+        if dist is not None and dist < best_distance:
+            best_distance = dist
+            break
+    return best_distance
+
+
+def query_surface_of_most_similar_obj_eql(
+    object_of_interest: SemanticAnnotation,
+    supporting_surfaces: List[HasSupportingSurface],
+    threshold: int = 1,
+) -> Optional[HasSupportingSurface]:
+    """
+    EQL-based version: Finds the most similar object to a given semantic annotation among a list of tables
+    based on the inheritance path length. If the similarity does not meet the provided
+    threshold, the method attempts to return the table that is not supporting any object.
+    The similarity metric leverages the class hierarchy to compute distances.
+
+    :param object_of_interest: The semantic annotation to compare.
+    :param supporting_surfaces: A list of supporting surfaces semantic annotations to search on top of them for similar objects to the object_of_interest.
+    :param threshold: The maximum acceptable inheritance path length to classify objects
+                      as similar. Defaults to 1.
+    :return: The semantic annotation of the most appropriate surface based on similarity
+             metrics or the non-supporting table when no viable candidate is found, or None if there are no supporting surfaces.
+    """
+    if not supporting_surfaces:
+        return None
+
+    # Find the surface that is not supporting anything using EQL
+    supporting_surfaces_var = variable_from(supporting_surfaces)
+    non_supporting_surface = entity(supporting_surfaces_var).where(
+        not_(is_supporting(supporting_surfaces_var.bodies[0]))
+    )
+    non_supporting_table = non_supporting_surface.first() if non_supporting_surface.tolist() else None
+
+    # Query annotations on the surfaces using EQL
+    objects = query_semantic_annotations_on_surfaces(
+        supporting_surfaces, object_of_interest._world
+    )
+
+    # Order objects by inheritance distance and get the most similar
+    objects_ordered_by_similarity_list = objects.ordered_by(
+        compute_min_inheritance_distance(objects.selected_variable, type(object_of_interest))
+    ).tolist()
+
+    if not objects_ordered_by_similarity_list:
+        return non_supporting_table
+
+    most_similar = objects_ordered_by_similarity_list[0]
+
+    # Apply threshold to determine if the match is acceptable
+    best_distance = compute_min_inheritance_distance(most_similar, type(object_of_interest))
+    if best_distance > threshold:
+        return non_supporting_table
+
+    # Find the table supporting the most similar object using EQL
+    most_similar_body = most_similar.bodies[0]
+    supporting_surface_result = entity(supporting_surfaces_var).where(
+        is_supported_by(most_similar_body, supporting_surfaces_var.bodies[0])
+    )
+    # if supporting_surface_result.tolist():
+    #     print("yes")
+    # print("##############################################################################################################")
+
+    return supporting_surface_result.first()
+
+
+world = test_load_world()
+table1 = world.get_semantic_annotation_by_name("fruit_table")
+table2 = world.get_semantic_annotation_by_name("vegetable_table")
+table3 = world.get_semantic_annotation_by_name("empty_table")
+table4 = world.get_semantic_annotation_by_name("empty_table2")
+
+banana = world.get_semantic_annotation_by_name("banana")
+apple = world.get_semantic_annotation_by_name("apple")
+carrot = world.get_semantic_annotation_by_name("carrot")
+orange = world.get_semantic_annotation_by_name("orange")
+lettuce = world.get_semantic_annotation_by_name("lettuce")
+
+print(query_surface_of_most_similar_obj_eql(banana, [table1, table3, table2]))
+
+
 
 def query_annotations_by_color(color: Color, objects: list[SemanticAnnotation]) -> List[SemanticAnnotation]:
     """
