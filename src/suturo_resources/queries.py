@@ -298,18 +298,13 @@ def get_object_mro(obj: SemanticAnnotation) -> tuple:
     return type(obj).__mro__
 
 @symbolic_function
-def compute_min_inheritance_distance1(main_obj: SemanticAnnotation, other_obj: SemanticAnnotation) -> float:
+def get_inheritance_distance(target_type: type, cls: type) -> float:
     """
-    Compute the minimum inheritance path length between an object and a target type.
+    Get the inheritance path length between target_type and cls.
     Returns infinity if no inheritance path exists.
     """
-    best_distance = math.inf
-    for cls in type(other_obj).__mro__:
-        dist = inheritance_path_length(type(main_obj), cls)
-        if dist is not None and dist < best_distance:
-            best_distance = dist
-            break
-    return best_distance
+    dist = inheritance_path_length(target_type, cls)
+    return dist if dist is not None else math.inf
 
 
 def query_surface_of_most_similar_obj_eql1(
@@ -345,9 +340,14 @@ def query_surface_of_most_similar_obj_eql1(
         supporting_surfaces, object_of_interest._world
     )
 
-    # Order objects by inheritance distance and get the most similar
+    # Get MRO for each object and compute minimum distance using EQL (replaces compute_min_inheritance_distance1)
+    mro = flat_variable(get_object_mro(objects.selected_variable))
+
+    # Order objects by minimum inheritance distance - EQL handles the iteration over MRO classes
     objects_ordered_by_similarity_list = objects.ordered_by(
-        compute_min_inheritance_distance1(object_of_interest, objects.selected_variable)
+        the(entity(mro).ordered_by(
+            get_inheritance_distance(type(object_of_interest), mro)
+        ))
     ).tolist()
 
     if not objects_ordered_by_similarity_list:
@@ -355,9 +355,14 @@ def query_surface_of_most_similar_obj_eql1(
 
     most_similar = objects_ordered_by_similarity_list[0]
 
-    # Apply threshold to determine if the match is acceptable
-    best_distance = compute_min_inheritance_distance1(object_of_interest, most_similar)
-    if best_distance > threshold:
+    # Apply threshold - compute minimum distance using EQL (replaces compute_min_inheritance_distance1)
+    mro_similar = flat_variable(get_object_mro(most_similar))
+    best_distance_cls = entity(mro_similar).ordered_by(
+        get_inheritance_distance(type(object_of_interest), mro_similar)
+    ).first()
+    best_distance_value = get_inheritance_distance(type(object_of_interest), best_distance_cls)
+
+    if best_distance_value > threshold:
         return non_supporting_table
 
     # Find the table supporting the most similar object using EQL
@@ -367,5 +372,3 @@ def query_surface_of_most_similar_obj_eql1(
     )
 
     return supporting_surface_result.first()
-
-print(query_surface_of_most_similar_obj_eql1(carrot, [table1]))
