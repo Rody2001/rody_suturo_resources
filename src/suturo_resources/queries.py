@@ -130,21 +130,13 @@ def query_surface_of_most_similar_obj(
             return supporting_surface
 
 @symbolic_function
-def get_object_mro(obj: SemanticAnnotation) -> tuple:
+def compute_min_inheritance_distance(obj: SemanticAnnotation, target_type: type) -> float:
     """
-    Returns the Method Resolution Order (MRO) of the object's type.
-    """
-    return type(obj).__mro__
-
-
-@symbolic_function
-def compute_min_inheritance_distance_from_mro(mro: tuple, target_type: type) -> float:
-    """
-    Compute the minimum inheritance path length between an MRO and a target type.
+    Compute the minimum inheritance path length between an object and a target type.
     Returns infinity if no inheritance path exists.
     """
     best_distance = math.inf
-    for cls in mro:
+    for cls in type(obj).__mro__:
         dist = inheritance_path_length(target_type, cls)
         if dist is not None and dist < best_distance:
             best_distance = dist
@@ -187,7 +179,7 @@ def query_surface_of_most_similar_obj_eql(
 
     # Order objects by inheritance distance and get the most similar
     objects_ordered_by_similarity_list = objects.ordered_by(
-        compute_min_inheritance_distance_from_mro(get_object_mro(objects), type(object_of_interest))
+        compute_min_inheritance_distance(objects.selected_variable, type(object_of_interest))
     ).tolist()
 
     if not objects_ordered_by_similarity_list:
@@ -196,9 +188,7 @@ def query_surface_of_most_similar_obj_eql(
     most_similar = objects_ordered_by_similarity_list[0]
 
     # Apply threshold to determine if the match is acceptable
-    best_distance = compute_min_inheritance_distance_from_mro(
-        get_object_mro(most_similar), type(object_of_interest)
-    )
+    best_distance = compute_min_inheritance_distance(most_similar, type(object_of_interest))
     if best_distance > threshold:
         return non_supporting_table
 
@@ -223,7 +213,7 @@ carrot = world.get_semantic_annotation_by_name("carrot")
 orange = world.get_semantic_annotation_by_name("orange")
 lettuce = world.get_semantic_annotation_by_name("lettuce")
 
-print(query_surface_of_most_similar_obj_eql(banana, [table1, table3, table2]))
+print(query_surface_of_most_similar_obj_eql(carrot, [table1, table3, table2]))
 
 
 
