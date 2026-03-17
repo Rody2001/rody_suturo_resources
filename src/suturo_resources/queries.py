@@ -11,6 +11,7 @@ from semantic_digital_twin.reasoning.predicates import (
     is_supporting,
 )
 from semantic_digital_twin.semantic_annotations.mixins import HasSupportingSurface, IsPerceivable
+from semantic_digital_twin.semantic_annotations.semantic_annotations import Fruit, Food, Apple, Carrot, Banana
 from semantic_digital_twin.world import World
 #from semantic_digital_twin.semantic_annotations.mixins import HasDestination
 from semantic_digital_twin.world_description.geometry import Color
@@ -290,27 +291,25 @@ def query_class_by_label(label: str) -> Optional[type]:
 #     return results
 
 @symbolic_function
-def compute_min_inheritance_distance1(obj: SemanticAnnotation, target_type: type) -> float:
-    """
-    Compute the minimum inheritance path length between an object and a target type.
-    Returns infinity if no inheritance path exists.
-    """
-    best_distance = math.inf
-    for cls in type(obj).__mro__:
-        dist = inheritance_path_length(target_type, cls)
-        if dist is not None and dist < best_distance:
-            best_distance = dist
-            break
-    return best_distance
-
-@symbolic_function
 def get_object_mro(obj: SemanticAnnotation) -> tuple:
     """
     Returns the Method Resolution Order (MRO) of the object's type.
     """
     return type(obj).__mro__
 
-print(get_object_mro(apple))
+@symbolic_function
+def compute_min_inheritance_distance1(main_obj: SemanticAnnotation, other_obj: SemanticAnnotation) -> float:
+    """
+    Compute the minimum inheritance path length between an object and a target type.
+    Returns infinity if no inheritance path exists.
+    """
+    best_distance = math.inf
+    for cls in type(other_obj).__mro__:
+        dist = inheritance_path_length(type(main_obj), cls)
+        if dist is not None and dist < best_distance:
+            best_distance = dist
+            break
+    return best_distance
 
 
 def query_surface_of_most_similar_obj_eql1(
@@ -348,7 +347,7 @@ def query_surface_of_most_similar_obj_eql1(
 
     # Order objects by inheritance distance and get the most similar
     objects_ordered_by_similarity_list = objects.ordered_by(
-        compute_min_inheritance_distance1(objects.selected_variable, type(object_of_interest))
+        compute_min_inheritance_distance1(object_of_interest, objects.selected_variable)
     ).tolist()
 
     if not objects_ordered_by_similarity_list:
@@ -357,7 +356,7 @@ def query_surface_of_most_similar_obj_eql1(
     most_similar = objects_ordered_by_similarity_list[0]
 
     # Apply threshold to determine if the match is acceptable
-    best_distance = compute_min_inheritance_distance1(most_similar, type(object_of_interest))
+    best_distance = compute_min_inheritance_distance1(object_of_interest, most_similar)
     if best_distance > threshold:
         return non_supporting_table
 
@@ -368,3 +367,5 @@ def query_surface_of_most_similar_obj_eql1(
     )
 
     return supporting_surface_result.first()
+
+print(query_surface_of_most_similar_obj_eql1(carrot, [table1]))
