@@ -10,7 +10,7 @@ from semantic_digital_twin.reasoning.predicates import (
     compute_euclidean_distance_2d,
     is_supporting,
 )
-from semantic_digital_twin.semantic_annotations.mixins import HasSupportingSurface, IsPerceivable
+from semantic_digital_twin.semantic_annotations.mixins import HasSupportingSurface, IsPerceivable, HasRootBody
 from semantic_digital_twin.world import World
 #from semantic_digital_twin.semantic_annotations.mixins import HasDestination
 from semantic_digital_twin.world_description.geometry import Color
@@ -20,6 +20,7 @@ from semantic_digital_twin.world_description.world_entity import (
     SemanticAnnotation,
 )
 
+from conftest import test_load_world
 
 
 def query_semantic_annotations_on_surfaces(
@@ -177,12 +178,12 @@ def query_class_by_label(label: str) -> Optional[type]:
     )
     return None if matching_class.tolist() == [] else matching_class.first()
 
-def query_sort_by_size(annotations: List[SemanticAnnotation], order: Optional[bool]=True) -> List[SemanticAnnotation]:
+def query_sort_by_size(annotations: List[HasRootBody], order: Optional[bool]=True) -> List[SemanticAnnotation]:
     """
     Sorts a list of SemanticAnnotations by volume in descending order (largest to smallest).
     Volume is calculated by multiplying the scale dimensions (x * y * z) of the object's shape.
 
-    :param annotations: List of SemanticAnnotation objects to sort.
+    :param annotations: List of annotations of type HasRootBody to sort.
     :param order: Whether to sort in ascending or descending order (default is True).
     :return: List of SemanticAnnotation objects sorted by volume (largest to smallest).
     """
@@ -197,17 +198,9 @@ def query_sort_by_size(annotations: List[SemanticAnnotation], order: Optional[bo
 
         # Get shapes from collision if available, otherwise from visual
         if body.collision is not None:
-            shapes = body.collision.shapes
+            return body.collision.scale.x * body.collision.scale.y * body.collision.scale.z
         else:
             return 0.0
-
-        # Get the first shape's scale
-        if shapes and len(shapes) > 0:
-            scale = shapes[0].scale
-            return scale.x * scale.y * scale.z
-
-        return 0.0
-
     return sorted(newList, key=get_volume, reverse=order)
 
 ########################################################
