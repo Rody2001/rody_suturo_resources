@@ -33,10 +33,12 @@ def query_semantic_annotations_on_surfaces(
     return: List of SemanticAnnotations that are supported by the given supporting_surfaces.
     """
     supporting_surfaces_var = variable_from(supporting_surfaces)
-    body_with_enabled_collision = variable_from(world.bodies_with_enabled_collision)
+    body_with_enabled_collision = variable_from(world.bodies_with_collision)
+    print(body_with_enabled_collision.tolist()[0]._semantic_annotations)
     semantic_annotations = flat_variable(
         body_with_enabled_collision._semantic_annotations
     )
+    print(semantic_annotations.tolist())
     semantic_annotations_that_are_supported = entity(semantic_annotations).where(
         is_supported_by(
             supported_body=body_with_enabled_collision,
@@ -201,3 +203,14 @@ def query_class_by_label(label: str) -> Optional[type]:
 #     for dest_type in dest_types:
 #         results.extend(world.get_semantic_annotations_by_type(dest_type))
 #     return results
+
+world = test_load_world()
+table1 = world.get_semantic_annotation_by_name("fruit_table")
+table2 = world.get_semantic_annotation_by_name("vegetable_table")
+table3 = world.get_semantic_annotation_by_name("empty_table")
+apple = world.get_semantic_annotation_by_name("apple")
+carrot = world.get_semantic_annotation_by_name("carrot")
+orange = world.get_semantic_annotation_by_name("orange")
+lettuce = world.get_semantic_annotation_by_name("lettuce")
+
+print(query_semantic_annotations_on_surfaces([table1], world).tolist())
