@@ -175,3 +175,29 @@ def query_class_by_label(label: str) -> Optional[type]:
         class_name_in_label(semantic_class, label)
     )
     return None if matching_class.tolist() == [] else matching_class.first()
+
+
+def query_sort_by_size(annotations: List[HasRootBody], order: Optional[bool]=True) -> List[SemanticAnnotation]:
+    """
+    Sorts a list of SemanticAnnotations by volume in descending order (largest to smallest).
+    Volume is calculated by multiplying the scale dimensions (x * y * z) of the object's shape.
+
+    :param annotations: List of annotations of type HasRootBody to sort.
+    :param order: Whether to sort in ascending or descending order (default is True).
+    :return: List of SemanticAnnotation objects sorted by volume (largest to smallest).
+    """
+    newList = []
+    for annotation in annotations:
+        if annotation.bodies:
+            newList.append(annotation)
+
+    def get_volume(annotation: SemanticAnnotation) -> float:
+        """Calculate volume from the annotation's body scale."""
+        body = annotation.bodies[0]
+
+        # Get shapes from collision if available, otherwise from visual
+        if body.collision is not None:
+            return body.collision.scale.x * body.collision.scale.y * body.collision.scale.z
+        else:
+            return 0.0
+    return sorted(newList, key=get_volume, reverse=order)

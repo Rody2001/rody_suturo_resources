@@ -6,7 +6,7 @@ from conftest import test_load_world
 from suturo_resources.queries import (
     query_surface_of_most_similar_obj,
     query_semantic_annotations_on_surfaces,
-    query_get_next_object_euclidean_x_y, query_annotations_by_color, query_class_by_label,
+    query_get_next_object_euclidean_x_y, query_annotations_by_color, query_class_by_label, query_sort_by_size,
 )
 from suturo_resources.suturo_map import load_environment
 
@@ -123,7 +123,7 @@ def test_query_body_by_color():
     assert query_annotations_by_color(Color.RED(), [apple, orange]) == [apple]
     assert query_annotations_by_color(Color.ORANGE(), [apple, orange]) == [orange]
     assert query_annotations_by_color(Color.BLUE(), [apple, orange,carrot]) == []
-    assert query_annotations_by_color(Color.ORANGE(), (query_semantic_annotations_on_surfaces([table1, table2], world).evaluate())) == [orange, carrot]
+    assert query_annotations_by_color(Color.ORANGE(), (query_semantic_annotations_on_surfaces([table1, table2], world).tolist())) == [orange, carrot]
 
 def test_query_class_by_label():
     """
@@ -134,3 +134,22 @@ def test_query_class_by_label():
     assert query_class_by_label("bowl_collapsable_yellowgrey") == Bowl
 
     assert query_class_by_label("unknown_object") is None
+
+
+def test_query_sort_by_size():
+    """
+    Tests the query_sort_by_size function by verifying the order of the returned annotations.
+    """
+    world = test_load_world()
+    table1 = world.get_semantic_annotation_by_name("fruit_table")
+    table2 = world.get_semantic_annotation_by_name("vegetable_table")
+
+    apple = world.get_semantic_annotation_by_name("apple")
+    carrot = world.get_semantic_annotation_by_name("carrot")
+    lettuce = world.get_semantic_annotation_by_name("lettuce")
+
+    assert query_sort_by_size([]) ==[]
+    assert query_sort_by_size([apple, carrot]) == [apple, carrot]
+    assert query_sort_by_size([table1, lettuce, apple]) == [table1, lettuce, apple]
+    assert query_sort_by_size([table1, lettuce, apple], False) == [apple, lettuce, table1]
+    assert query_sort_by_size(query_semantic_annotations_on_surfaces([table2], world).tolist()) == [lettuce, carrot]
