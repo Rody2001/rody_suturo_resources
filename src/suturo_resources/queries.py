@@ -1,6 +1,5 @@
 import math
 from typing import List, Union, Optional
-#from entity_query_language.symbolic import QueryObjectDescriptor
 from krrood.entity_query_language.factories import variable_from, entity, flat_variable, in_, the, contains, variable, \
     an
 from krrood.entity_query_language.query.query import Entity
@@ -13,7 +12,6 @@ from semantic_digital_twin.reasoning.predicates import (
 )
 from semantic_digital_twin.semantic_annotations.mixins import HasSupportingSurface, IsPerceivable, HasRootBody
 from semantic_digital_twin.world import World
-#from semantic_digital_twin.semantic_annotations.mixins import HasDestination
 from semantic_digital_twin.world_description.geometry import Color
 
 from semantic_digital_twin.world_description.world_entity import (
