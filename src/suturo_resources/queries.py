@@ -179,7 +179,6 @@ def query_class_by_label(label: str) -> Optional[type]:
     return None if matching_class.tolist() == [] else matching_class.first()
 
 
-########################################################
 def query_sort_by_size(annotations: List[HasRootBody], order: Optional[bool]=True) -> List[SemanticAnnotation]:
     """
     Sorts a list of SemanticAnnotations by volume in descending order (largest to smallest).
