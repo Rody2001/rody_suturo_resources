@@ -1,7 +1,7 @@
 import math
 from typing import List, Union, Optional
-#from entity_query_language.symbolic import QueryObjectDescriptor
-from krrood.entity_query_language.factories import variable_from, entity, flat_variable, in_, the, contains
+from krrood.entity_query_language.factories import variable_from, entity, flat_variable, in_, the, contains, variable, \
+    an
 from krrood.entity_query_language.query.query import Entity
 from krrood.entity_query_language.predicate import symbolic_function
 from krrood.utils import inheritance_path_length, recursive_subclasses
@@ -10,9 +10,8 @@ from semantic_digital_twin.reasoning.predicates import (
     compute_euclidean_distance_2d,
     is_supporting,
 )
-from semantic_digital_twin.semantic_annotations.mixins import HasSupportingSurface, IsPerceivable
+from semantic_digital_twin.semantic_annotations.mixins import HasSupportingSurface, IsPerceivable, HasRootBody
 from semantic_digital_twin.world import World
-#from semantic_digital_twin.semantic_annotations.mixins import HasDestination
 from semantic_digital_twin.world_description.geometry import Color
 
 from semantic_digital_twin.world_description.world_entity import (
@@ -20,11 +19,9 @@ from semantic_digital_twin.world_description.world_entity import (
     SemanticAnnotation,
 )
 
-from conftest import test_load_world
-
 
 def query_semantic_annotations_on_surfaces(
-    supporting_surfaces: List[SemanticAnnotation], world: World
+    supporting_surfaces: List[HasRootBody], world: World
 ) -> Union[Entity[SemanticAnnotation], SemanticAnnotation]:
     """
     Queries a list of Semantic annotations that are on top of a given list of other annotations (ex. Tables).
@@ -33,18 +30,16 @@ def query_semantic_annotations_on_surfaces(
     return: List of SemanticAnnotations that are supported by the given supporting_surfaces.
     """
     supporting_surfaces_var = variable_from(supporting_surfaces)
-    body_with_enabled_collision = variable_from(world.bodies_with_enabled_collision)
-    semantic_annotations = flat_variable(
-        body_with_enabled_collision._semantic_annotations
-    )
-    semantic_annotations_that_are_supported = entity(semantic_annotations).where(
+    bodies = variable_from(world.bodies_with_collision)
+    body = entity(bodies).where(
         is_supported_by(
-            supported_body=body_with_enabled_collision,
-            supporting_body=supporting_surfaces_var.bodies[0],
+            supported_body=bodies,
+            supporting_body=supporting_surfaces_var.root,
         )
     )
-    return semantic_annotations_that_are_supported
-
+    return entity(
+            semantic_annotation := variable(HasRootBody, domain=world.semantic_annotations)
+        ).where(semantic_annotation.root == body)
 
 def query_get_next_object_euclidean_x_y(
     main_body: Body,
@@ -154,7 +149,10 @@ def query_annotations_by_color(color: Color, objects: list[SemanticAnnotation]) 
             filtered_bodies.append(body)
     filtered_annotations = []
     for body in filtered_bodies:
-        filtered_annotations.append(list(body._semantic_annotations)[0])
+        world = body._world
+        filtered_annotations.extend(an(entity(
+            semantic_annotation := variable(HasRootBody, domain=world.semantic_annotations)
+        ).where(semantic_annotation.root == body)).tolist())
     return filtered_annotations
 
 
@@ -177,27 +175,3 @@ def query_class_by_label(label: str) -> Optional[type]:
         class_name_in_label(semantic_class, label)
     )
     return None if matching_class.tolist() == [] else matching_class.first()
-
-
-# def query_object_destination(world: World, obj: HasDestination) -> List[SemanticAnnotation]:
-#     """
-#     Query suitable destination semantic annotations for a given object.
-#
-#     The object's class defines one or multiple preferred destination types via
-#     the `destination_class_names` class variable.
-#
-#     :param world: The world containing semantic annotations.
-#     :param obj: The object to be brought somewhere (must support HasDestination).
-#     :return: A list of all destination semantic annotations found in the world.
-#              The list may be empty.
-#     """
-#     dest_types = obj.destination_class_names
-#
-#     if not dest_types:
-#         return []
-#
-#     # Result
-#     results: List[SemanticAnnotation] = []
-#     for dest_type in dest_types:
-#         results.extend(world.get_semantic_annotations_by_type(dest_type))
-#     return results

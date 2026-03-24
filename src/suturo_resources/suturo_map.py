@@ -494,14 +494,21 @@ def build_environment_furniture(world: World):
         for color in cooking_table.bodies[0].visual.shapes:
             color.color = Color.BEIGE()
 
+        dinning_table = Table.create_with_new_body_in_world(
+            world=world,
+            name=PrefixedName("dining_table"),
+            world_root_T_self=root_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(x=2.59975, y=5.705,
+                                                                                                 z=0.365),
+            scale=Scale(0.73, 1.18, 0.73),
+        )
+        for color in dinning_table.bodies[0].visual.shapes:
+            color.color = Color.BEIGE()
 
         world.add_connection(root_C_ovenArea)
     return world
 
 
 def build_environment_rooms(world: World):
-
-    room_annotations = []
 
     root_transformation = HomogeneousTransformationMatrix.from_xyz_rpy(
         x=0.33, y=0.28, yaw=0.10707963267
@@ -544,7 +551,6 @@ def build_environment_rooms(world: World):
             @ HomogeneousTransformationMatrix.from_xyz_rpy(x=2.317, y=-0.843),
         )
         kitchen = Room(floor=kitchen_floor, name=PrefixedName("kitchen"))
-        room_annotations.append(kitchen)
 
         living_room_floor = Floor.create_with_new_body_from_polytope_in_world(
             name=PrefixedName("living_room_floor"),
@@ -554,7 +560,6 @@ def build_environment_rooms(world: World):
             @ HomogeneousTransformationMatrix.from_xyz_rpy(x=2.317, y=2.3095),
         )
         living_room = Room(floor=living_room_floor, name=PrefixedName("living_room"))
-        room_annotations.append(living_room)
 
         bed_room_floor = Floor.create_with_new_body_from_polytope_in_world(
             name=PrefixedName("bed_room_floor"),
@@ -564,7 +569,6 @@ def build_environment_rooms(world: World):
             @ HomogeneousTransformationMatrix.from_xyz_rpy(x=0.96, y=4.96),
         )
         bed_room = Room(floor=bed_room_floor, name=PrefixedName("bed_room"))
-        room_annotations.append(bed_room)
 
         office_floor = Floor.create_with_new_body_from_polytope_in_world(
             name=PrefixedName("office_floor"),
@@ -574,9 +578,6 @@ def build_environment_rooms(world: World):
             @ HomogeneousTransformationMatrix.from_xyz_rpy(x=3.56, y=4.96),
         )
         office = Room(floor=office_floor, name=PrefixedName("office"))
-        room_annotations.append(office)
-
-        world.add_semantic_annotations(room_annotations)
 
     return world
 
@@ -591,5 +592,5 @@ class Publisher:
         self.thread.start()
 
     def publish(self, world):
-        viz = VizMarkerPublisher(world=world, node=self.node)
+        viz = VizMarkerPublisher(_world=world, node=self.node)
         viz.with_tf_publisher()
