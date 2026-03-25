@@ -4,10 +4,13 @@ import numpy as np
 import rclpy
 from semantic_digital_twin.adapters.ros.visualization.viz_marker import VizMarkerPublisher
 from semantic_digital_twin.datastructures.prefixed_name import PrefixedName
-from semantic_digital_twin.semantic_annotations.semantic_annotations import Wall, Table, Door, Sofa
+from semantic_digital_twin.semantic_annotations.semantic_annotations import Wall, Table, Door, Sofa, ShelfLayer, \
+    Cupboard
 from semantic_digital_twin.spatial_types import HomogeneousTransformationMatrix
 from semantic_digital_twin.world import World
-from semantic_digital_twin.world_description.geometry import Scale, Color
+from semantic_digital_twin.world_description.connections import FixedConnection
+from semantic_digital_twin.world_description.geometry import Scale, Color, Box
+from semantic_digital_twin.world_description.shape_collection import ShapeCollection
 from semantic_digital_twin.world_description.world_entity import Body
 
 
@@ -160,6 +163,55 @@ def build_apartment_furniture(world: World):
         )
         for color in sofa_table.bodies[0].visual.shapes:
             color.color = Color.BEIGE()
+
+            # 1. Create a cabinet (carcass).
+            cabinet_scale = Scale(0.35, 0.85, 1.903)
+            cabinet = Cupboard.create_with_new_body_in_world(
+                name=PrefixedName("my_new_cabinet"),
+                world=world,
+                world_root_T_self=slam_map_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(
+                    x=0.15, y=2.37, z=cabinet_scale.z / 2, yaw=np.pi  # pose
+                ),
+                scale=cabinet_scale,
+                wall_thickness=0.02,
+            )
+
+            # attach the cabinet to the room root so that the coordinates are relative to the room.
+            cabinet_connection = cabinet.root.parent_connection
+            world.remove_connection(cabinet_connection)
+            cabinet_connection.parent = root
+            world.add_connection(cabinet_connection)
+
+            # 2. Create the physical bodies for the shelves
+            shelf_thickness = 0.018  # 1.8 cm
+            shelf_scale = Scale(0.33, 0.76, shelf_thickness)
+
+            # Target surface heights from the floor in meters
+            surface_heights = [0.291, 0.639, 0.956]
+            cabinet_center_z = cabinet_scale.z / 2
+
+            for i, target_surface_height in enumerate(surface_heights, start=1):
+                shelf_geom = ShapeCollection([Box(scale=shelf_scale, color=Color.BEIGE())])
+                shelf_body = Body(
+                    name=PrefixedName(f"shelf_body_{i}"),
+                    collision=shelf_geom,
+                    visual=shelf_geom,
+                )
+                shelf = ShelfLayer(root=shelf_body, name=PrefixedName(f"shelf_{i}"))
+
+                # Calculate local z: (surface_height - half_thickness) - cabinet_center
+                local_z = (target_surface_height - (shelf_thickness / 2)) - cabinet_center_z
+
+                cabinet_C_shelf = FixedConnection(
+                    parent=cabinet.root,
+                    child=shelf_body,
+                    parent_T_connection_expression=HomogeneousTransformationMatrix.from_xyz_rpy(
+                        x=0, y=0, z=local_z
+                    ),
+                )
+                world.add_connection(cabinet_C_shelf)
+                world.add_semantic_annotation(shelf)
+                #cabinet.add_shelf_layer(shelf)
 
     return world
 
