@@ -105,7 +105,7 @@ def build_apartment_furniture(world: World):
             world=world,
             name=PrefixedName("desk"),
             world_root_T_self=slam_map_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(
-                x=0.40, y=4.55, z=0.43
+                x=0.40, y=4.65, z=0.43
             ),
             scale=Scale(0.80, 1.40, 0.86),
         )
@@ -170,7 +170,7 @@ def build_apartment_furniture(world: World):
                 name=PrefixedName("my_new_cabinet"),
                 world=world,
                 world_root_T_self=slam_map_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(
-                    x=0.15, y=2.37, z=cabinet_scale.z / 2, yaw=np.pi  # pose
+                    x=0.15, y=3.295, z=cabinet_scale.z / 2, yaw=np.pi  # pose
                 ),
                 scale=cabinet_scale,
                 wall_thickness=0.02,
@@ -231,5 +231,5 @@ class Publisher:
         viz.with_tf_publisher()
 
 
-# publisher = Publisher("semantic_digital_twin")
-# publisher.publish(build_apartment_map())
+publisher = Publisher("semantic_digital_twin")
+publisher.publish(build_apartment_map())
