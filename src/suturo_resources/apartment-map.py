@@ -13,7 +13,7 @@ from semantic_digital_twin.world_description.world_entity import Body
 
 def build_apartment_map():
     world = World()
-    root = Body(name=PrefixedName("root"))
+    root = Body(name=PrefixedName("map"))
 
     with world.modify_world():
         world.add_body(root)
@@ -27,7 +27,7 @@ def build_apartment_walls(world: World):
     root = world.root
 
     slam_map_transformation = HomogeneousTransformationMatrix.from_xyz_rpy(
-        x=0, y=0, yaw=0
+        x=0.5, y=0, yaw=0
     )
 
     with world.modify_world():
@@ -82,11 +82,15 @@ def build_apartment_walls(world: World):
 def build_apartment_furniture(world: World):
     root = world.root
 
+    slam_map_transformation = HomogeneousTransformationMatrix.from_xyz_rpy(
+        x=0.5, y=0, yaw=0
+    )
+
     with world.modify_world():
         food_table = Table.create_with_new_body_in_world(
             world=world,
             name=PrefixedName("food_table"),
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
+            world_root_T_self=slam_map_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(
                 x=3.905, y=6.185, z=0.375, yaw=np.pi/2
             ),
             scale=Scale(0.90, 1.40, 0.75),
@@ -97,8 +101,8 @@ def build_apartment_furniture(world: World):
         desk = Table.create_with_new_body_in_world(
             world=world,
             name=PrefixedName("desk"),
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
-                x=0.40, y=4.85, z=0.43
+            world_root_T_self=slam_map_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(
+                x=0.40, y=4.55, z=0.43
             ),
             scale=Scale(0.80, 1.40, 0.86),
         )
@@ -106,7 +110,7 @@ def build_apartment_furniture(world: World):
         high_table = Table.create_with_new_body_in_world(
             world=world,
             name=PrefixedName("high_table"),
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
+            world_root_T_self=slam_map_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(
                 x=4.525, y=2.955, z=0.527
             ),
             scale=Scale(0.70, 0.70, 1.054),
@@ -116,7 +120,7 @@ def build_apartment_furniture(world: World):
         door = Door.create_with_new_body_in_world(
             world=world,
             name=PrefixedName("door"),
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
+            world_root_T_self=slam_map_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(
                 x=0.48, y=0.4725, z=1.10, yaw=np.pi/2
             ),
             scale=Scale(0.045, 0.96, 2.20),
@@ -126,7 +130,7 @@ def build_apartment_furniture(world: World):
         big_sofa = Sofa.create_with_new_body_in_world(
             world=world,
             name=PrefixedName("big_sofa"),
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
+            world_root_T_self=slam_map_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(
                 x=4.53, y=-0.185, z=0.3675
             ),
             scale=Scale(0.88, 2.10, 0.735),
@@ -138,7 +142,7 @@ def build_apartment_furniture(world: World):
         small_sofa = Sofa.create_with_new_body_in_world(
             world=world,
             name=PrefixedName("small_sofa"),
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
+            world_root_T_self=slam_map_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(
                 x=3.54, y=1.555, z=0.3675
             ),
             scale=Scale(0.81, 0.90, 0.735),
@@ -149,8 +153,8 @@ def build_apartment_furniture(world: World):
         sofa_table = Table.create_with_new_body_in_world(
             world=world,
             name=PrefixedName("sofa_table"),
-            world_root_T_self=HomogeneousTransformationMatrix.from_xyz_rpy(
-                x=2.893, y=0.1465, z=0.201
+            world_root_T_self=slam_map_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(
+                x=3.2, y=0.08, z=0.201
             ),
             scale=Scale(0.697, 1.197, 0.402),
         )
