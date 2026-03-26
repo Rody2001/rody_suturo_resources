@@ -16,7 +16,7 @@ from semantic_digital_twin.world_description.world_entity import Body
 
 def build_apartment_map():
     world = World()
-    root = Body(name=PrefixedName("map"))
+    root = Body(name=PrefixedName("root"))
 
     with world.modify_world():
         world.add_body(root)
@@ -128,6 +128,18 @@ def build_apartment_furniture(world: World):
             ),
             scale=Scale(0.045, 0.96, 2.20),
         )
+
+
+        small_table = Table.create_with_new_body_in_world(
+            world=world,
+            name=PrefixedName("small_table"),
+            world_root_T_self=slam_map_transformation @ HomogeneousTransformationMatrix.from_xyz_rpy(
+                x=0.16, y=0.6325, z=0.23
+            ),
+            scale=Scale(0.32, 0.32, 0.46),
+        )
+        for color in small_table.bodies[0].visual.shapes:
+            color.color = Color.BEIGE()
 
 
         big_sofa = Sofa.create_with_new_body_in_world(
