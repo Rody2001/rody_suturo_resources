@@ -250,7 +250,6 @@ def build_environment_furniture(world: World):
         )
         world.add_connection(cupboard_C_shelf_1)
         world.add_semantic_annotation(shelf_1)
-        cupboard.add_shelf_layer(shelf_1)
 
         # Shelf 2
         shelf_2_geom = ShapeCollection([Box(scale=shelf_scale, color=Color.WHITE())])
