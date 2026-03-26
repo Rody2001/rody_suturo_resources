@@ -243,5 +243,5 @@ class Publisher:
         viz.with_tf_publisher()
 
 
-publisher = Publisher("semantic_digital_twin")
-publisher.publish(build_apartment_map())
+# publisher = Publisher("semantic_digital_twin")
+# publisher.publish(build_apartment_map())
